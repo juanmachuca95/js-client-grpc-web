@@ -68,3 +68,21 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+
+
+--- ENVOY : TEST ENVOY.YAML 
+cd envoy 
+
+docker run --rm \
+    -v $(pwd)/envoy.yaml:/envoy.yaml \
+    envoyproxy/envoy-dev:0b769f6e299dac9115cba10008ce984d0ebf951a \
+    --mode validate -c envoy.yaml
+
+docker run --rm -it \
+    -v $(pwd)/envoy.yaml:/envoy.yaml \
+    -p 8000:8000 \
+    -p 9901:9901 \
+    envoyproxy/envoy-dev:0b769f6e299dac9115cba10008ce984d0ebf951a \
+        -c /envoy.yaml
