@@ -75,6 +75,9 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 --- ENVOY : TEST ENVOY.YAML 
 cd envoy 
 
+NOTA: IMPORTANTE SI EL SERVIDOR GO... NO SE ENCUENTRA DENTRO DE LOS RECURSOS DEL DOCKER --- 
+LA RESPUESTA SERA: 503----- 
+
 docker run --rm \
     -v $(pwd)/envoy.yaml:/envoy.yaml \
     envoyproxy/envoy-dev:0b769f6e299dac9115cba10008ce984d0ebf951a \
@@ -86,3 +89,12 @@ docker run --rm -it \
     -p 9901:9901 \
     envoyproxy/envoy-dev:0b769f6e299dac9115cba10008ce984d0ebf951a \
         -c /envoy.yaml
+
+
+
+--------------------
+Implementación separada .... 
+cd envoy
+envoy -c envoy.yaml
+
+--- ejecución exitosa..
