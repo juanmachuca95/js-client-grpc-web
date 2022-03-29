@@ -2,14 +2,109 @@ syntax = "proto3";
 
 option go_package = "pb";
 
-message HolaRequest {
-  string message = 1;
+/* Subasta service */
+message Subasta {
+    int32 id = 1;
+    string subasta = 2;
+    string fecha = 3;
+    bool activo = 4;
+    string created_at = 5;
+    string updated_at = 6;
 }
 
-message HolaResponse {
-  string message = 1;
+message SubastaProducto {
+    string id = 1;
+    Subasta subasta = 2; // subastas_id
+    Producto producto = 3; // productos_id
+    bool activo = 4;
+    float oferta_final = 5;
+    string created_at = 6;
+    string updated_at = 7;
+    string subastas_ofertas_id_winner = 8;
 }
 
-service HolaService {
-  rpc Hola(HolaRequest) returns (HolaResponse);
+message SubastaOferta {
+    SubastaProducto subasta_producto = 1; // subastas_productos_id
+    float oferta_precio = 2;
+    string created_at = 3;
+    string updated_at = 4;
+    User user = 5;
+}
+
+message SubastaId {
+    string id = 1;
+}
+
+message Subastas {
+    repeated Subasta subastas = 1;
+}
+
+message Empty {}
+
+service SubastaService {
+    rpc GetSubasta(SubastaId) returns (Subasta) {};
+    rpc GetSubastas(Empty) returns (Subastas){};
+}
+
+/* Cliente Service */
+message Cliente {
+    string id = 1;
+    string cliente = 2;
+    string cuit = 3;
+    string direccion = 4;
+    string created_at = 5;
+    string updated_at = 6; 
+}
+
+message ClienteId {
+    string id = 1;
+}
+
+service ClienteService {
+    rpc GetCliente (ClienteId) returns (Cliente) {};
+}
+
+/* Producto Service */
+message Producto {
+    string id = 1;
+    string producto = 2;
+    string descripcion = 3;
+    int32 stock = 4;
+    bool activo = 5;
+    float precio_inicial = 6;
+    float precio_aumento = 7;
+    float precio_subasta = 8;
+    string created_at = 9;
+    string updated_at = 10;
+    Cliente cliente = 11;
+}
+
+message CreateProductoReq {
+    string id = 1;
+    string producto = 2;
+    string descripcion = 3;
+    int32 stock = 4;
+    bool activo = 5;
+    float precio_inicial = 6;
+    float precio_aumento = 7;
+    float precio_subasta = 8;
+    string created_at = 9;
+    string updated_at = 10;
+    string clientes_id = 11;
+}
+
+
+service ProductoService {
+    rpc Create(CreateProductoReq) returns (Producto){};
+}
+
+
+/* Users Service */
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string password = 4;
+    string created_at = 5;
+    string updated_at = 6;
 }

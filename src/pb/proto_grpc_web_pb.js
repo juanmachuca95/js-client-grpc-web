@@ -25,7 +25,7 @@ const proto = require('./proto_pb.js');
  * @struct
  * @final
  */
-proto.HolaServiceClient =
+proto.SubastaServiceClient =
     function(hostname, credentials, options) {
   if (!options) options = {};
   options.format = 'text';
@@ -51,7 +51,7 @@ proto.HolaServiceClient =
  * @struct
  * @final
  */
-proto.HolaServicePromiseClient =
+proto.SubastaServicePromiseClient =
     function(hostname, credentials, options) {
   if (!options) options = {};
   options.format = 'text';
@@ -72,61 +72,348 @@ proto.HolaServicePromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.HolaRequest,
- *   !proto.HolaResponse>}
+ *   !proto.SubastaId,
+ *   !proto.Subasta>}
  */
-const methodDescriptor_HolaService_Hola = new grpc.web.MethodDescriptor(
-  '/HolaService/Hola',
+const methodDescriptor_SubastaService_GetSubasta = new grpc.web.MethodDescriptor(
+  '/SubastaService/GetSubasta',
   grpc.web.MethodType.UNARY,
-  proto.HolaRequest,
-  proto.HolaResponse,
+  proto.SubastaId,
+  proto.Subasta,
   /**
-   * @param {!proto.HolaRequest} request
+   * @param {!proto.SubastaId} request
    * @return {!Uint8Array}
    */
   function(request) {
     return request.serializeBinary();
   },
-  proto.HolaResponse.deserializeBinary
+  proto.Subasta.deserializeBinary
 );
 
 
 /**
- * @param {!proto.HolaRequest} request The
+ * @param {!proto.SubastaId} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.HolaResponse)}
+ * @param {function(?grpc.web.RpcError, ?proto.Subasta)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.HolaResponse>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.Subasta>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.HolaServiceClient.prototype.hola =
+proto.SubastaServiceClient.prototype.getSubasta =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/HolaService/Hola',
+      '/SubastaService/GetSubasta',
       request,
       metadata || {},
-      methodDescriptor_HolaService_Hola,
+      methodDescriptor_SubastaService_GetSubasta,
       callback);
 };
 
 
 /**
- * @param {!proto.HolaRequest} request The
+ * @param {!proto.SubastaId} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.HolaResponse>}
+ * @return {!Promise<!proto.Subasta>}
  *     Promise that resolves to the response
  */
-proto.HolaServicePromiseClient.prototype.hola =
+proto.SubastaServicePromiseClient.prototype.getSubasta =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/HolaService/Hola',
+      '/SubastaService/GetSubasta',
       request,
       metadata || {},
-      methodDescriptor_HolaService_Hola);
+      methodDescriptor_SubastaService_GetSubasta);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.Empty,
+ *   !proto.Subastas>}
+ */
+const methodDescriptor_SubastaService_GetSubastas = new grpc.web.MethodDescriptor(
+  '/SubastaService/GetSubastas',
+  grpc.web.MethodType.UNARY,
+  proto.Empty,
+  proto.Subastas,
+  /**
+   * @param {!proto.Empty} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.Subastas.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.Subastas)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.Subastas>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.SubastaServiceClient.prototype.getSubastas =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/SubastaService/GetSubastas',
+      request,
+      metadata || {},
+      methodDescriptor_SubastaService_GetSubastas,
+      callback);
+};
+
+
+/**
+ * @param {!proto.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.Subastas>}
+ *     Promise that resolves to the response
+ */
+proto.SubastaServicePromiseClient.prototype.getSubastas =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/SubastaService/GetSubastas',
+      request,
+      metadata || {},
+      methodDescriptor_SubastaService_GetSubastas);
+};
+
+
+/**
+ * @param {string} hostname
+ * @param {?Object} credentials
+ * @param {?grpc.web.ClientOptions} options
+ * @constructor
+ * @struct
+ * @final
+ */
+proto.ClienteServiceClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options.format = 'text';
+
+  /**
+   * @private @const {!grpc.web.GrpcWebClientBase} The client
+   */
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+  /**
+   * @private @const {string} The hostname
+   */
+  this.hostname_ = hostname;
+
+};
+
+
+/**
+ * @param {string} hostname
+ * @param {?Object} credentials
+ * @param {?grpc.web.ClientOptions} options
+ * @constructor
+ * @struct
+ * @final
+ */
+proto.ClienteServicePromiseClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options.format = 'text';
+
+  /**
+   * @private @const {!grpc.web.GrpcWebClientBase} The client
+   */
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+  /**
+   * @private @const {string} The hostname
+   */
+  this.hostname_ = hostname;
+
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.ClienteId,
+ *   !proto.Cliente>}
+ */
+const methodDescriptor_ClienteService_GetCliente = new grpc.web.MethodDescriptor(
+  '/ClienteService/GetCliente',
+  grpc.web.MethodType.UNARY,
+  proto.ClienteId,
+  proto.Cliente,
+  /**
+   * @param {!proto.ClienteId} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.Cliente.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.ClienteId} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.Cliente)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.Cliente>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.ClienteServiceClient.prototype.getCliente =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/ClienteService/GetCliente',
+      request,
+      metadata || {},
+      methodDescriptor_ClienteService_GetCliente,
+      callback);
+};
+
+
+/**
+ * @param {!proto.ClienteId} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.Cliente>}
+ *     Promise that resolves to the response
+ */
+proto.ClienteServicePromiseClient.prototype.getCliente =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/ClienteService/GetCliente',
+      request,
+      metadata || {},
+      methodDescriptor_ClienteService_GetCliente);
+};
+
+
+/**
+ * @param {string} hostname
+ * @param {?Object} credentials
+ * @param {?grpc.web.ClientOptions} options
+ * @constructor
+ * @struct
+ * @final
+ */
+proto.ProductoServiceClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options.format = 'text';
+
+  /**
+   * @private @const {!grpc.web.GrpcWebClientBase} The client
+   */
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+  /**
+   * @private @const {string} The hostname
+   */
+  this.hostname_ = hostname;
+
+};
+
+
+/**
+ * @param {string} hostname
+ * @param {?Object} credentials
+ * @param {?grpc.web.ClientOptions} options
+ * @constructor
+ * @struct
+ * @final
+ */
+proto.ProductoServicePromiseClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options.format = 'text';
+
+  /**
+   * @private @const {!grpc.web.GrpcWebClientBase} The client
+   */
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+  /**
+   * @private @const {string} The hostname
+   */
+  this.hostname_ = hostname;
+
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.CreateProductoReq,
+ *   !proto.Producto>}
+ */
+const methodDescriptor_ProductoService_Create = new grpc.web.MethodDescriptor(
+  '/ProductoService/Create',
+  grpc.web.MethodType.UNARY,
+  proto.CreateProductoReq,
+  proto.Producto,
+  /**
+   * @param {!proto.CreateProductoReq} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.Producto.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.CreateProductoReq} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.Producto)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.Producto>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.ProductoServiceClient.prototype.create =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/ProductoService/Create',
+      request,
+      metadata || {},
+      methodDescriptor_ProductoService_Create,
+      callback);
+};
+
+
+/**
+ * @param {!proto.CreateProductoReq} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.Producto>}
+ *     Promise that resolves to the response
+ */
+proto.ProductoServicePromiseClient.prototype.create =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/ProductoService/Create',
+      request,
+      metadata || {},
+      methodDescriptor_ProductoService_Create);
 };
 
 

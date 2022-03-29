@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option go_package = "pb";
+
+message HolaRequest {
+  string message = 1;
+}
+
+message HolaResponse {
+  string message = 1;
+}
+
+service HolaService {
+  rpc Hola(HolaRequest) returns (HolaResponse);
+}
