@@ -3,7 +3,9 @@ import React from "react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Login from "./Login";
-import Subasta from "./Subasta";
+import Subasta from "./Subastas/Subasta";
+import JoinSubasta from "./Subastas/JoinSubasta";
+
 
 
 function App(){
@@ -12,6 +14,7 @@ function App(){
       <Routes>
         <Route path="/" element={<Subasta />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/joinsubasta/:id" element={<JoinSubasta />} />
       </Routes>
     </div>
   );
