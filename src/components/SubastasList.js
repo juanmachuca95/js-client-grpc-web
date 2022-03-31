@@ -2,9 +2,9 @@ import React from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { Container, Grid } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 
 export default function SubastasList({ subastas }) {
@@ -33,12 +33,11 @@ function SubastaCard({subasta}){
                 <Typography variant="h5" component="div">
                     { subasta.subasta }
                 </Typography>
-                {/* <Typography variant="body2">
-                    {  }
-                </Typography> */}
             </CardContent>
             <CardActions>
-            <Button LinkComponent={`/joinsubasta/:${subasta.id}`} size="large">Unirse</Button>
+               <Link to={"/joinsubasta/"+subasta.id}>
+                Unirse
+               </Link>
             </CardActions>
         </Card>
     )

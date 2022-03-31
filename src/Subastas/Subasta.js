@@ -22,7 +22,7 @@ export default function Subasta() {
         console.log(err.code, err.message);
       } else {
         let subastasList = response.getSubastasList();
-        console.log(response.getSubastasList())
+        /* console.log(response.getSubastasList()) */
         subastasList = subastasList.map((subasta) => {
           return {
             id: subasta.array[0],
