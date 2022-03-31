@@ -31,6 +31,14 @@ export default function JoinSubasta(){
     const getSubastaOfertas = () => {
         console.log("called")
     
+        let request = new proto.SubastaProductoId();
+        request.setId("1")
+        var stream = subastaService.getSubastaOfertas(request, {});
+
+        stream.on('data', function(response){
+            console.log("traido desde el stream ", response)
+            setRows(response.getValue())
+        })
         /* var sensorRequest = new SensorRequest()
         var stream = client.tempSensor(sensorRequest,{})
     

@@ -24,20 +24,21 @@ message SubastaProductos {
     repeated SubastaProducto subastas_productos = 1;
 }
 
-message SubastaOferta {
-    SubastaProducto subasta_producto = 1; // subastas_productos_id
-    float oferta_precio = 2;
-    string created_at = 3;
-    string updated_at = 4;
-    User user = 5;
-}
-
 message SubastaId {
     string id = 1;
 }
 
 message Subastas {
     repeated Subasta subastas = 1;
+}
+
+message SubastaProductoId {
+    string id = 1;
+}
+
+message SubastaOferta {
+    string user = 1;
+    float oferta_precio = 2;
 }
 
 message Empty {}
@@ -47,6 +48,7 @@ service SubastaService {
     rpc GetSubastas(Empty) returns (Subastas){};
     rpc GetSubastaProducto(SubastaId) returns (SubastaProducto){}
     rpc GetSubastaProductos(SubastaId) returns (SubastaProductos){}
+    rpc GetSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){}
 }
 
 /* Cliente Service */
