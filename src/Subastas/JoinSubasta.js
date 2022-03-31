@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Card, CardContent, Container, Grid, Typography } from '@mui/material';
+import { Box, Card, CardContent, Container, Grid, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import proto from '../pb/proto_grpc_web_pb';
 
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -9,6 +9,12 @@ export default function JoinSubasta(){
     const { id } = useParams();
     const [subasta, setSubasta] = useState({});
     const [subastaProductos, setSubastaProductos] = useState([]);
+    const [productoActual, setProductoActual] = useState();
+    const [rows, setRows] = useState([1, 159]);
+    const [columns] = useState([
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'oferta', headerName: '$', width: 130 },
+    ]);
 
     useEffect(()=>{
         getSubasta();
@@ -16,6 +22,24 @@ export default function JoinSubasta(){
         console.log(subastaProductos);
     }, [])
 
+
+    useEffect(() => {
+        getSubastaOfertas();
+    }, [])
+
+
+    const getSubastaOfertas = () => {
+        console.log("called")
+    
+        /* var sensorRequest = new SensorRequest()
+        var stream = client.tempSensor(sensorRequest,{})
+    
+        stream.on('data', function(response){
+            setTemp(response.getValue())
+        }); */
+    };
+
+    
     function getSubasta() {
         var request = new proto.SubastaId();
         request.setId(id)
@@ -73,26 +97,29 @@ export default function JoinSubasta(){
                     })
 
                 setSubastaProductos(subastaProductosList);
+                setProductoActual(1)
             }
         });
     }
-
-   
-
-   
 
     return (
         <>
             <Box sx={{ paddingTop: 4 }}>
                 <Container>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>      
-                            <Typography variant="h1" fontSize={40} align="left">
-                                {subasta.subasta}
-                            </Typography>        
-                            <Typography variant="h5" align="left">
-                                Productos en subasta ({ subastaProductos.length})    
-                            </Typography>    
+                    <Grid container spacing={5}>
+                        <Grid item xs={6} align="left">      
+                            <Box sx={{ paddingTop:5, paddingBottom:5 }}>
+                                <Typography variant="h1" fontSize={40}>
+                                    {subasta.subasta}
+                                </Typography>        
+                                <Typography variant="h5">
+                                    Productos en subasta ({ subastaProductos.length})    
+                                </Typography>    
+                            </Box>
+
+                            <TextField fullWidth id="outlined-basic" label="Ofertar" variant="outlined" />
+
+                            <DataTableSubastaOfertas rows={rows} />
                         </Grid>
 
                         <Grid item xs={6}>  
@@ -137,3 +164,29 @@ function SubastaProductosCard({producto}){
         </Card>
     )
 }
+
+
+function DataTableSubastaOfertas({rows}){
+    return (
+        <TableContainer sx={{ marginTop: 2 }} component={Paper}>
+        <Table fullWidth aria-label="simple table">
+            <TableHead>
+            <TableRow>
+                <TableCell># </TableCell>
+                <TableCell align="right">Oferta</TableCell>
+            </TableRow>
+            </TableHead>
+            <TableBody>
+            {rows.map((row) => (
+                <TableRow key={row.name}>
+                <TableCell component="th" scope="row">
+                    {row.name}
+                </TableCell>
+                </TableRow>
+            ))}
+            </TableBody>
+        </Table>
+        </TableContainer>
+    )
+}
+
