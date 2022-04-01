@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Card, CardContent, Container, Grid, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import proto from '../pb/proto_grpc_web_pb';
 
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -9,21 +9,12 @@ export default function JoinSubasta(){
     const { id } = useParams();
     const [subasta, setSubasta] = useState({});
     const [subastaProductos, setSubastaProductos] = useState([]);
-    const [productoActual, setProductoActual] = useState();
-    const [rows, setRows] = useState([1, 159]);
-    const [columns] = useState([
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'oferta', headerName: '$', width: 130 },
-    ]);
+    //const [productoActual, setProductoActual] = useState();
+    const [rows, setRows] = useState([]);
 
     useEffect(()=>{
         getSubasta();
         getSubastaProductos();
-        console.log(subastaProductos);
-    }, [])
-
-
-    useEffect(() => {
         getSubastaOfertas();
     }, [])
 
@@ -36,15 +27,16 @@ export default function JoinSubasta(){
         var stream = subastaService.getSubastaOfertas(request, {});
 
         stream.on('data', function(response){
-            console.log("traido desde el stream ", response)
-            setRows(response.getValue())
+            let record = {
+                user: response.getUser(),
+                oferta: response.getOfertaPrecio()
+            };   
+
+            let data = rows;
+            data.push(record)
+            setRows(data)
         })
-        /* var sensorRequest = new SensorRequest()
-        var stream = client.tempSensor(sensorRequest,{})
-    
-        stream.on('data', function(response){
-            setTemp(response.getValue())
-        }); */
+
     };
 
     
@@ -105,7 +97,6 @@ export default function JoinSubasta(){
                     })
 
                 setSubastaProductos(subastaProductosList);
-                setProductoActual(1)
             }
         });
     }
@@ -125,7 +116,14 @@ export default function JoinSubasta(){
                                 </Typography>    
                             </Box>
 
-                            <TextField fullWidth id="outlined-basic" label="Ofertar" variant="outlined" />
+                            <Grid container spacing={2}>
+                                <Grid item xs={8}>
+                                    <TextField fullWidth id="outlined-basic" label="Ofertar" variant="outlined" />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <Button fullWidth variant="outlined" size="large">Ofertar</Button>
+                                </Grid>
+                            </Grid>
 
                             <DataTableSubastaOfertas rows={rows} />
                         </Grid>
@@ -145,7 +143,6 @@ export default function JoinSubasta(){
 
 function StepperListSubastaProductos ({subastaProductos}){
     const listProductos = subastaProductos && subastaProductos.map((subastaproducto, i) => {
-        console.log(subastaproducto.id)
         return <SubastaProductosCard {...subastaproducto}  key={subastaproducto.id}/>
     })
 
@@ -175,23 +172,31 @@ function SubastaProductosCard({producto}){
 
 
 function DataTableSubastaOfertas({rows}){
+    const listContent = rows.map((row) => {
+        return <TableRow key={row.oferta}>
+        <TableCell component="th" scope="row">
+            {row.user}
+        </TableCell>
+        <TableCell component="th" scope="row">
+            {row.oferta}
+        </TableCell>
+        </TableRow>
+    })
+
+
     return (
         <TableContainer sx={{ marginTop: 2 }} component={Paper}>
-        <Table fullWidth aria-label="simple table">
+        <Table aria-label="simple table">
             <TableHead>
             <TableRow>
-                <TableCell># </TableCell>
-                <TableCell align="right">Oferta</TableCell>
+                <TableCell>Usuario </TableCell>
+                <TableCell align="left">Oferta</TableCell>
             </TableRow>
             </TableHead>
             <TableBody>
-            {rows.map((row) => (
-                <TableRow key={row.name}>
-                <TableCell component="th" scope="row">
-                    {row.name}
-                </TableCell>
-                </TableRow>
-            ))}
+
+                { listContent }
+
             </TableBody>
         </Table>
         </TableContainer>
