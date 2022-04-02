@@ -41,6 +41,12 @@ message SubastaOferta {
     float oferta_precio = 2;
 }
 
+message SubastaOfertaCreate {
+    int32 users_id = 1;
+    float oferta_precio = 2;
+    int32 subastas_productos_id = 3;
+}
+
 message Empty {}
 
 service SubastaService {
@@ -49,6 +55,9 @@ service SubastaService {
     rpc GetSubastaProducto(SubastaId) returns (SubastaProducto){}
     rpc GetSubastaProductos(SubastaId) returns (SubastaProductos){}
     rpc GetSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){}
+
+
+    rpc AddSubastaOferta(SubastaOfertaCreate) returns (Empty){}
 }
 
 /* Cliente Service */

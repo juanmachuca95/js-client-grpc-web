@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, createRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import proto from '../pb/proto_grpc_web_pb';
@@ -11,11 +11,16 @@ export default function JoinSubasta(){
     const [subastaProductos, setSubastaProductos] = useState([]);
     //const [productoActual, setProductoActual] = useState();
     const [rows, setRows] = useState([]);
+    /** Input */
+    const [valSubastaOferta, setValSubastaOferta] = useState(undefined);
 
+    const count = useRef(0);
     useEffect(()=>{
         getSubasta();
         getSubastaProductos();
         getSubastaOfertas();
+
+        count.current = count.current + 1;
     }, [])
 
 
@@ -101,6 +106,25 @@ export default function JoinSubasta(){
         });
     }
 
+
+    const handlerCreateSubastaOferta = (e) => {
+        e.preventDefault();
+
+        if(valSubastaOferta === "") return ;
+        let subastaOfertaCreate = new proto.SubastaOfertaCreate();
+        subastaOfertaCreate.setUsersId(1);
+        subastaOfertaCreate.setOfertaPrecio(valSubastaOferta);
+        subastaOfertaCreate.setSubastasProductosId(1);
+
+        subastaService.addSubastaOferta(subastaOfertaCreate, {}, (error, response) => {
+            if(error !== null) console.log(error.code, error.message);
+            console.log(response)
+        });
+
+        setValSubastaOferta(undefined)
+        document.getElementById('valSubastaOferta').value = '';
+    }
+
     return (
         <>
             <Box sx={{ paddingTop: 4 }}>
@@ -112,16 +136,23 @@ export default function JoinSubasta(){
                                     {subasta.subasta}
                                 </Typography>        
                                 <Typography variant="h5">
-                                    Productos en subasta ({ subastaProductos.length})    
+                                    Productos en subasta ({ subastaProductos.length}) <br></br>
+                                    Número de render {count.current}   
                                 </Typography>    
                             </Box>
 
                             <Grid container spacing={2}>
                                 <Grid item xs={8}>
-                                    <TextField fullWidth id="outlined-basic" label="Ofertar" variant="outlined" />
+                                    <TextField 
+                                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} 
+                                        id="valSubastaOferta" 
+                                        onChange={(e) => setValSubastaOferta(e.target.value)} 
+                                        fullWidth 
+                                        label="Ofertar" 
+                                        variant="outlined" />
                                 </Grid>
                                 <Grid item xs={4}>
-                                    <Button fullWidth variant="outlined" size="large">Ofertar</Button>
+                                    <Button onClick={handlerCreateSubastaOferta} fullWidth variant="outlined" size="large">Ofertar</Button>
                                 </Grid>
                             </Grid>
 
