@@ -12,24 +12,8 @@ export default function JoinSubasta(){
     const [subastaProductos, setSubastaProductos] = useState([]);
     const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
     const [columns, setColumns] = useState([
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'firstName', headerName: 'First name', width: 130 },
-        { field: 'lastName', headerName: 'Last name', width: 130 },
-        {
-          field: 'age',
-          headerName: 'Age',
-          type: 'number',
-          width: 90,
-        },
-        {
-          field: 'fullName',
-          headerName: 'Full name',
-          description: 'This column has a value getter and is not sortable.',
-          sortable: false,
-          width: 160,
-          valueGetter: (params) =>
-            `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-        },
+        { field: 'user', headerName: 'Usuario', width: 70 },
+        { field: 'oferta', headerName: 'Oferta', width: 130 }
     ]);
 
     const [rows, setRows] = useState([]);
@@ -63,7 +47,7 @@ export default function JoinSubasta(){
             };   
 
             setRows((rows) => [...rows, record])
-            console.log("rows cargadas", rows)
+            console.log(record)
         })
 
     };
@@ -182,7 +166,7 @@ export default function JoinSubasta(){
                             </Grid>
 
                             {/* <DataTableSubastaOfertas rows={rows} /> */}
-                            <DataGridSubastaOfertas rows={subastaProductos} />
+                            <DataGridSubastaOfertas rows={rows} />
                             
                         </Grid>
 
@@ -227,14 +211,19 @@ function SubastaProductosCard({producto}){
 }
 
 function DataGridSubastaOfertas({rows}){
+    const columns = [
+        { field: 'user', headerName: 'Usuario', width: 150 },
+        { field: 'oferta', headerName: '$ Oferta', width: 150 },
+    ];
+
     return (
-        <div style={{ height: auto, width: '100%' }}>
+        <div style={{ height: 400, width: '100%' }}>
           <DataGrid
             rows={rows}
             columns={columns}
             pageSize={5}
             rowsPerPageOptions={[5]}
-            checkboxSelection
+            getRowId={(row) => row.oferta}
           />
         </div>
       );
