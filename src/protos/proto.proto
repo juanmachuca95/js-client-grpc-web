@@ -33,7 +33,7 @@ message Subastas {
 }
 
 message SubastaProductoId {
-    string id = 1;
+    int32 id = 1;
 }
 
 message SubastaOferta {
@@ -56,8 +56,10 @@ service SubastaService {
     rpc GetSubastaProductos(SubastaId) returns (SubastaProductos){}
     rpc GetSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){}
 
+    /* Create an ofert auction */
+    rpc AddSubastaOferta(SubastaOfertaCreate) returns (Empty){} 
 
-    rpc AddSubastaOferta(SubastaOfertaCreate) returns (Empty){}
+    //rpc SubscribeProductoId(SubastaProductoId) returns (Empty){}
 }
 
 /* Cliente Service */

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, createRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import proto from '../pb/proto_grpc_web_pb';
 
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -9,7 +10,28 @@ export default function JoinSubasta(){
     const { id } = useParams();
     const [subasta, setSubasta] = useState({});
     const [subastaProductos, setSubastaProductos] = useState([]);
-    //const [productoActual, setProductoActual] = useState();
+    const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
+    const [columns, setColumns] = useState([
+        { field: 'id', headerName: 'ID', width: 70 },
+        { field: 'firstName', headerName: 'First name', width: 130 },
+        { field: 'lastName', headerName: 'Last name', width: 130 },
+        {
+          field: 'age',
+          headerName: 'Age',
+          type: 'number',
+          width: 90,
+        },
+        {
+          field: 'fullName',
+          headerName: 'Full name',
+          description: 'This column has a value getter and is not sortable.',
+          sortable: false,
+          width: 160,
+          valueGetter: (params) =>
+            `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+        },
+    ]);
+
     const [rows, setRows] = useState([]);
     /** Input */
     const [valSubastaOferta, setValSubastaOferta] = useState(undefined);
@@ -23,6 +45,9 @@ export default function JoinSubasta(){
         count.current = count.current + 1;
     }, [])
 
+    const getSubscripcionProductoSubasta = () => {
+        
+    }
 
     const getSubastaOfertas = () => {
         console.log("called")
@@ -37,14 +62,12 @@ export default function JoinSubasta(){
                 oferta: response.getOfertaPrecio()
             };   
 
-            let data = rows;
-            data.push(record)
-            setRows(data)
+            setRows((rows) => [...rows, record])
+            console.log("rows cargadas", rows)
         })
 
     };
 
-    
     function getSubasta() {
         var request = new proto.SubastaId();
         request.setId(id)
@@ -102,6 +125,7 @@ export default function JoinSubasta(){
                     })
 
                 setSubastaProductos(subastaProductosList);
+                setProductoEnSubastaActual(subastaProductosList[0].producto) // producto en subasta
             }
         });
     }
@@ -139,6 +163,7 @@ export default function JoinSubasta(){
                                     Productos en subasta ({ subastaProductos.length}) <br></br>
                                     Número de render {count.current}   
                                 </Typography>    
+                                <h6>Subastando producto id: {productoEnSubastaActual.producto}</h6>
                             </Box>
 
                             <Grid container spacing={2}>
@@ -156,7 +181,9 @@ export default function JoinSubasta(){
                                 </Grid>
                             </Grid>
 
-                            <DataTableSubastaOfertas rows={rows} />
+                            {/* <DataTableSubastaOfertas rows={rows} /> */}
+                            <DataGridSubastaOfertas rows={subastaProductos} />
+                            
                         </Grid>
 
                         <Grid item xs={6}>  
@@ -176,13 +203,11 @@ function StepperListSubastaProductos ({subastaProductos}){
     const listProductos = subastaProductos && subastaProductos.map((subastaproducto, i) => {
         return <SubastaProductosCard {...subastaproducto}  key={subastaproducto.id}/>
     })
-
     return (
         <>   
             { listProductos }
         </>
     )
-
 }
 
 
@@ -201,6 +226,19 @@ function SubastaProductosCard({producto}){
     )
 }
 
+function DataGridSubastaOfertas({rows}){
+    return (
+        <div style={{ height: auto, width: '100%' }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            checkboxSelection
+          />
+        </div>
+      );
+}
 
 function DataTableSubastaOfertas({rows}){
     const listContent = rows.map((row) => {

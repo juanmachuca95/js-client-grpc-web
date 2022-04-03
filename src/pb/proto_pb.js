@@ -5,8 +5,9 @@
  *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
-// GENERATED CODE -- DO NOT EDIT!
 /* eslint-disable */
+// GENERATED CODE -- DO NOT EDIT!
+
 var jspb = require('google-protobuf');
 var goog = jspb;
 var global = Function('return this')();
@@ -1098,7 +1099,7 @@ proto.SubastaProductoId.prototype.toObject = function(opt_includeInstance) {
  */
 proto.SubastaProductoId.toObject = function(includeInstance, msg) {
   var f, obj = {
-    id: jspb.Message.getFieldWithDefault(msg, 1, "")
+    id: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -1136,7 +1137,7 @@ proto.SubastaProductoId.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readInt32());
       msg.setId(value);
       break;
     default:
@@ -1169,8 +1170,8 @@ proto.SubastaProductoId.prototype.serializeBinary = function() {
 proto.SubastaProductoId.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getId();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeInt32(
       1,
       f
     );
@@ -1179,17 +1180,17 @@ proto.SubastaProductoId.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional string id = 1;
- * @return {string}
+ * optional int32 id = 1;
+ * @return {number}
  */
 proto.SubastaProductoId.prototype.getId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.SubastaProductoId.prototype.setId = function(value) {
-  jspb.Message.setProto3StringField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
