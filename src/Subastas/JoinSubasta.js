@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef, createRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Grid, IconButton, TextField, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import proto from '../pb/proto_grpc_web_pb';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { makeStyles } from '@material-ui/core/styles';
 
 let theme = createTheme();
 theme = responsiveFontSizes(theme);
@@ -17,10 +18,13 @@ export default function JoinSubasta(){
     const [subasta, setSubasta] = useState({});
     const [subastaProductos, setSubastaProductos] = useState([]);
     const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
-    const [columns, setColumns] = useState([
-        { field: 'user', headerName: 'Usuario' },
-        { field: 'oferta', headerName: 'Oferta' }
-    ]);
+
+    const useStyles = makeStyles({
+        bold: {
+          fontWeight: 600
+        }
+    })
+    const classes = useStyles();
 
     const [rows, setRows] = useState([]);
     /** Input */
@@ -142,7 +146,7 @@ export default function JoinSubasta(){
                     <Grid container spacing={5}>
                         <Grid item xs={6} align="left">      
                             <Box sx={{ paddingTop:5, paddingBottom:5 }}>
-                                <Typography variant="h1" fontSize={40} style={{ fontWeight: 600 }}>
+                                <Typography variant="h1" fontSize={40} className={classes.bold}>
                                     {subasta.subasta}
                                 </Typography>        
                                 <Typography variant="h5">
@@ -205,10 +209,25 @@ function StepperListSubastaProductos ({subastaProductos}){
 
 function SubastaProductosCard({producto}){
     return (
-        <Card>
+        <Card align="left">
+            <CardHeader
+                avatar={
+                <Avatar style={{ backgroundColor: 'red' }} aria-label="recipe">
+                    R
+                </Avatar>
+                }
+                title={ producto.producto }
+                subheader={ 'Inicial: $'+producto.precio_inicial +' / Aumento: $'+producto.precio_aumento+' / Subasta: $'+ producto.precio_subasta }
+            />
+            <CardMedia
+                component="img"
+                height="194"
+                image="https://images.unsplash.com/photo-1535050264505-ba17be3ee504?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+                alt="Paella dish"
+            />
             <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                    { producto.producto }
+                <Typography variant="body2" color="text.secondary">
+                Descripción: {producto.descripcion}
                 </Typography>
                 <Typography variant="h5" component="div">
                     { producto.producto.stock }
