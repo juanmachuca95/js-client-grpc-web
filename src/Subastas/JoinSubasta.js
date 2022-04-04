@@ -1,14 +1,10 @@
-import React, { useEffect, useState, useRef, createRef } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Avatar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Grid, IconButton, TextField, Typography } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { Alert, Avatar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Grid, TextField, Typography } from '@mui/material';
 import proto from '../pb/proto_grpc_web_pb';
-import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import DataGridSubastaOfertas from '../components/DataGridTable';
 
-let theme = createTheme();
-theme = responsiveFontSizes(theme);
 
 /** My Client gRPC - to Golang gRPC Server */
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -19,12 +15,10 @@ export default function JoinSubasta(){
     const [subasta, setSubasta] = useState({});
     const [subastaProductos, setSubastaProductos] = useState([]);
     const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
+    const [error_message, setErrorMessage] = useState('')
+    const [winnerOferta, setWinnerOferta] = useState(0)
 
-    const useStyles = makeStyles({
-        bold: {
-          fontWeight: 600
-        }
-    })
+    const useStyles = makeStyles({bold: {fontWeight: 600}})
     const classes = useStyles();
 
     const [rows, setRows] = useState([]);
@@ -41,7 +35,7 @@ export default function JoinSubasta(){
     }, [])
 
     const getSubastaOfertas = () => {
-        console.log("called")
+        console.log("Obteniendo subastas ofertas -- from server golang")
     
         let request = new proto.SubastaProductoId();
         request.setId("1")
@@ -52,6 +46,10 @@ export default function JoinSubasta(){
                 user: response.getUser(),
                 oferta: response.getOfertaPrecio()
             };   
+
+            if(record.oferta > winnerOferta){
+                setWinnerOferta(record.oferta)
+            }
 
             setRows((rows) => [...rows, record])
             console.log(record)
@@ -81,7 +79,7 @@ export default function JoinSubasta(){
         });
     }
 
-    function getSubastaProductos(){
+    const getSubastaProductos = () => {
         var request = new proto.SubastaId()
         request.setId(id)
         var metadata = {}
@@ -125,7 +123,23 @@ export default function JoinSubasta(){
     const handlerCreateSubastaOferta = (e) => {
         e.preventDefault();
 
-        if(valSubastaOferta === "") return ;
+        if(!(valSubastaOferta !== "" && valSubastaOferta > productoEnSubastaActual.precio_inicial)) {
+            setErrorMessage('El valor de oferta de ser superior o igual al precio inicial.');
+            return ;
+        }
+
+        var ofertaGanadora = 0;
+        if(winnerOferta === 0) {
+            ofertaGanadora = productoEnSubastaActual.precio_inicial} 
+        else {
+            ofertaGanadora = winnerOferta;
+        };
+        console.log(winnerOferta, productoEnSubastaActual.precio_inicial, ofertaGanadora+productoEnSubastaActual.precio_aumento)
+        if(!(valSubastaOferta >= (ofertaGanadora+productoEnSubastaActual.precio_aumento))){
+            setErrorMessage('El valor de oferta de ser superior o igual al precio ganador + el precio de aumento del producto.');
+            return ;
+        } 
+
         let subastaOfertaCreate = new proto.SubastaOfertaCreate();
         subastaOfertaCreate.setUsersId(1);
         subastaOfertaCreate.setOfertaPrecio(valSubastaOferta);
@@ -142,11 +156,11 @@ export default function JoinSubasta(){
 
     return (
         <>
-            <Box sx={{ paddingTop: 4 }}>
+            <Box sx={{ paddingTop: 8 }}>
                 <Container>
                     <Grid container spacing={5}>
                         <Grid item xs={5} align="left">      
-                            <Box sx={{ paddingTop:5, paddingBottom:5 }}>
+                            <Box>
                                 <Typography variant="h1" fontSize={40} className={classes.bold}>
                                     {subasta.subasta}
                                 </Typography>        
@@ -154,10 +168,24 @@ export default function JoinSubasta(){
                                     Productos en subasta ({ subastaProductos.length}) <br></br>
                                     Número de render {count.current}   
                                 </Typography>    
-                                <h6>Subastando producto id: {productoEnSubastaActual.producto}</h6>
+                                <h6>Subastando producto: {productoEnSubastaActual.producto}</h6>
                             </Box>
 
-                            <Grid container spacing={2}>
+                            <Grid container spacing={2}>   
+                                {winnerOferta > 0 &&
+                                <Grid item xs={12}>
+                                    <Alert  variant="outlined" severity="success">
+                                        Oferta ganadora: { winnerOferta }
+                                    </Alert>
+                                </Grid>
+                                }
+
+
+                                {error_message !== '' &&
+                                <Grid item xs={12}> 
+                                    <Alert severity="error">{ error_message }</Alert>  
+                                </Grid>                            
+                                }
                                 <Grid item xs={8}>
                                     <TextField 
                                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'  }}
@@ -213,7 +241,7 @@ function SubastaProductosCard({producto}){
         <Card align="left">
             <CardHeader
                 avatar={
-                <Avatar style={{ backgroundColor: 'red' }} aria-label="recipe">
+                <Avatar style={{ backgroundColor: 'orange' }} aria-label="recipe">
                     R
                 </Avatar>
                 }
