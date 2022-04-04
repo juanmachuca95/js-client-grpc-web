@@ -224,6 +224,7 @@ export default function JoinSubasta(){
 }
 
 
+/** Lista de productos */
 function StepperListSubastaProductos ({subastaProductos}){
     const listProductos = subastaProductos && subastaProductos.map((subastaproducto, i) => {
         return <SubastaProductosCard {...subastaproducto}  key={subastaproducto.id}/>
