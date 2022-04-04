@@ -5,6 +5,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import proto from '../pb/proto_grpc_web_pb';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 import { makeStyles } from '@material-ui/core/styles';
+import DataGridSubastaOfertas from '../components/DataGridTable';
 
 let theme = createTheme();
 theme = responsiveFontSizes(theme);
@@ -235,23 +236,4 @@ function SubastaProductosCard({producto}){
             </CardContent>
         </Card>
     )
-}
-
-function DataGridSubastaOfertas({rows}){
-    const columns = [
-        { field: 'user', headerName: 'Usuario', width: '272' },
-        { field: 'oferta', headerName: '$ Oferta', width: '272' },
-    ];
-
-    return (
-        <div style={{ height: 400, width: '100%', paddingTop: '40px', paddingBottom: '40px' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            getRowId={(row) => row.oferta}
-          />
-        </div>
-    );
 }
