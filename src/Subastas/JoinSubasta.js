@@ -144,7 +144,7 @@ export default function JoinSubasta(){
             <Box sx={{ paddingTop: 4 }}>
                 <Container>
                     <Grid container spacing={5}>
-                        <Grid item xs={6} align="left">      
+                        <Grid item xs={5} align="left">      
                             <Box sx={{ paddingTop:5, paddingBottom:5 }}>
                                 <Typography variant="h1" fontSize={40} className={classes.bold}>
                                     {subasta.subasta}
@@ -182,7 +182,7 @@ export default function JoinSubasta(){
                             
                         </Grid>
 
-                        <Grid item xs={6}>  
+                        <Grid item xs={7}>  
                             <StepperListSubastaProductos subastaProductos={subastaProductos}/>
                         </Grid>
                     </Grid>
