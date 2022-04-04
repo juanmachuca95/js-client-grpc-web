@@ -1,10 +1,16 @@
 import React, { useEffect, useState, useRef, createRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Button, Card, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import proto from '../pb/proto_grpc_web_pb';
+import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
+let theme = createTheme();
+theme = responsiveFontSizes(theme);
+
+/** My Client gRPC - to Golang gRPC Server */
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
+
 
 export default function JoinSubasta(){
     const { id } = useParams();
@@ -12,8 +18,8 @@ export default function JoinSubasta(){
     const [subastaProductos, setSubastaProductos] = useState([]);
     const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
     const [columns, setColumns] = useState([
-        { field: 'user', headerName: 'Usuario', width: 70 },
-        { field: 'oferta', headerName: 'Oferta', width: 130 }
+        { field: 'user', headerName: 'Usuario' },
+        { field: 'oferta', headerName: 'Oferta' }
     ]);
 
     const [rows, setRows] = useState([]);
@@ -28,10 +34,6 @@ export default function JoinSubasta(){
 
         count.current = count.current + 1;
     }, [])
-
-    const getSubscripcionProductoSubasta = () => {
-        
-    }
 
     const getSubastaOfertas = () => {
         console.log("called")
@@ -140,7 +142,7 @@ export default function JoinSubasta(){
                     <Grid container spacing={5}>
                         <Grid item xs={6} align="left">      
                             <Box sx={{ paddingTop:5, paddingBottom:5 }}>
-                                <Typography variant="h1" fontSize={40}>
+                                <Typography variant="h1" fontSize={40} style={{ fontWeight: 600 }}>
                                     {subasta.subasta}
                                 </Typography>        
                                 <Typography variant="h5">
@@ -153,7 +155,8 @@ export default function JoinSubasta(){
                             <Grid container spacing={2}>
                                 <Grid item xs={8}>
                                     <TextField 
-                                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} 
+                                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'  }}
+                                        style={{ height:'38px' }}
                                         id="valSubastaOferta" 
                                         onChange={(e) => setValSubastaOferta(e.target.value)} 
                                         fullWidth 
@@ -161,7 +164,12 @@ export default function JoinSubasta(){
                                         variant="outlined" />
                                 </Grid>
                                 <Grid item xs={4}>
-                                    <Button onClick={handlerCreateSubastaOferta} fullWidth variant="outlined" size="large">Ofertar</Button>
+                                    <Button onClick={handlerCreateSubastaOferta} fullWidth variant="outlined" size="large" 
+                                        /* style={{ paddingTop: '13px', paddingBottom: '13px' }} */
+                                        style={{ padding:'14px' }}
+                                    >
+                                        Ofertar
+                                    </Button>
                                 </Grid>
                             </Grid>
 
@@ -212,12 +220,12 @@ function SubastaProductosCard({producto}){
 
 function DataGridSubastaOfertas({rows}){
     const columns = [
-        { field: 'user', headerName: 'Usuario', width: 150 },
-        { field: 'oferta', headerName: '$ Oferta', width: 150 },
+        { field: 'user', headerName: 'Usuario', width: '272' },
+        { field: 'oferta', headerName: '$ Oferta', width: '272' },
     ];
 
     return (
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 400, width: '100%', paddingTop: '40px', paddingBottom: '40px' }}>
           <DataGrid
             rows={rows}
             columns={columns}
@@ -226,38 +234,5 @@ function DataGridSubastaOfertas({rows}){
             getRowId={(row) => row.oferta}
           />
         </div>
-      );
+    );
 }
-
-function DataTableSubastaOfertas({rows}){
-    const listContent = rows.map((row) => {
-        return <TableRow key={row.oferta}>
-        <TableCell component="th" scope="row">
-            {row.user}
-        </TableCell>
-        <TableCell component="th" scope="row">
-            {row.oferta}
-        </TableCell>
-        </TableRow>
-    })
-
-
-    return (
-        <TableContainer sx={{ marginTop: 2 }} component={Paper}>
-        <Table aria-label="simple table">
-            <TableHead>
-            <TableRow>
-                <TableCell>Usuario </TableCell>
-                <TableCell align="left">Oferta</TableCell>
-            </TableRow>
-            </TableHead>
-            <TableBody>
-
-                { listContent }
-
-            </TableBody>
-        </Table>
-        </TableContainer>
-    )
-}
-
