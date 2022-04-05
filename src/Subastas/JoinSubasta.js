@@ -7,6 +7,7 @@ import DataGridSubastaOfertas from '../components/DataGridTable';
 import Layout from '../components/Layout/Layout';
 import useToken from '../App/useToken';
 import jwt_decode from 'jwt-decode';
+import StepperVertical from '../components/StepperVertical';
 
 /** My Client gRPC - to Golang gRPC Server */
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -225,7 +226,8 @@ export default function JoinSubasta(){
                         </Grid>
 
                         <Grid item xs={7}>  
-                            <StepperListSubastaProductos subastaProductos={subastaProductos}/>
+                                <StepperVertical steps={subastaProductos}/>
+                           {/*  <StepperListSubastaProductos subastaProductos={subastaProductos}/> */}
                         </Grid>
                     </Grid>
 

@@ -85,6 +85,8 @@ export default function Login ({setToken}){
                     />
 
                     <Button 
+                        variant="contained"
+                        size="large"
                         type="submit"
                         fullWidth
                         sx={{ mt: 3 }}
