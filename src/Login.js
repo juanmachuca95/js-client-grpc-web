@@ -1,13 +1,13 @@
 // eslint-disable-next-line 
 import React, { useState } from "react";
-import { Button, Box, Grid, TextField, Alert } from "@mui/material";
+import { Button, Box, Grid, TextField, Alert, Typography } from "@mui/material";
 import proto from './pb/proto_grpc_web_pb'
 
 var loginService = new proto.LoginServiceClient('http://0.0.0.0:8000');
 
 export default function Login ({setToken}){
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [email, setEmail] = useState(null);
+    const [password, setPassword] = useState(null);
     const [error_message, setErrorMessage] = useState();
 
     const handleSubmit = (e) => {
@@ -29,8 +29,8 @@ export default function Login ({setToken}){
                 }
 
                 setToken(response.getToken())
-                setEmail('');
-                setPassword('');
+                setEmail(null);
+                setPassword(null);
                 return ;
             })
         }
@@ -52,6 +52,13 @@ export default function Login ({setToken}){
                     onSubmit={handleSubmit}
 
                 >
+
+                    <Box sx={{ p:3 }}>
+                        <Typography variant="h1" align="center" fontSize={40} style={{ fontWeight:600 }}>
+                            SUBASTAS
+                        </Typography>        
+                    </Box>
+
                     {error_message !== undefined &&
                     <Grid item xs={12}> 
                         <Alert severity="error">{ error_message }</Alert>  

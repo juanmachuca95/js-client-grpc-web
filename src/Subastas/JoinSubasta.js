@@ -5,7 +5,8 @@ import proto from '../pb/proto_grpc_web_pb';
 import { makeStyles } from '@material-ui/core/styles';
 import DataGridSubastaOfertas from '../components/DataGridTable';
 import Layout from '../components/Layout/Layout';
-
+import useToken from '../App/useToken';
+import jwt_decode from 'jwt-decode';
 
 /** My Client gRPC - to Golang gRPC Server */
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -18,13 +19,12 @@ export default function JoinSubasta(){
     const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
     const [error_message, setErrorMessage] = useState('')
     const [winnerOferta, setWinnerOferta] = useState(0)
-
     const useStyles = makeStyles({bold: {fontWeight: 600}})
     const classes = useStyles();
-
     const [rows, setRows] = useState([]);
-    /** Input */
     const [valSubastaOferta, setValSubastaOferta] = useState(undefined);
+    const [user, setUser] = useState({});
+    const { token } = useToken();
 
     const count = useRef(0);
     useEffect(()=>{
@@ -32,14 +32,26 @@ export default function JoinSubasta(){
         getSubastaProductos();
         getSubastaOfertas();
 
+        getUser();
         count.current = count.current + 1;
     }, [])
+
+    const getUser = () => {
+        console.log("token. . . .", token)
+        var token_decoded = jwt_decode(token);
+        let user = {
+            users_id: token_decoded.users_id,
+            name: token_decoded.name,
+            photo: token_decoded.profile_photo_path,
+        }
+        setUser(user);
+    }
 
     const getSubastaOfertas = () => {
         console.log("Obteniendo subastas ofertas -- from server golang")
     
         let request = new proto.SubastaProductoId();
-        request.setId("1")
+        request.setId(productoEnSubastaActual.id)
         var stream = subastaService.getSubastaOfertas(request, {});
 
         stream.on('data', function(response){
@@ -53,7 +65,7 @@ export default function JoinSubasta(){
             }
 
             setRows((rows) => [...rows, record])
-            console.log(record)
+            //console.log(record)
         })
 
     };
@@ -142,7 +154,7 @@ export default function JoinSubasta(){
         } 
 
         let subastaOfertaCreate = new proto.SubastaOfertaCreate();
-        subastaOfertaCreate.setUsersId(1);
+        subastaOfertaCreate.setUsersId(user.users_id);
         subastaOfertaCreate.setOfertaPrecio(valSubastaOferta);
         subastaOfertaCreate.setSubastasProductosId(1);
 
