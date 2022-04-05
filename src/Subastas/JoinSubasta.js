@@ -178,15 +178,14 @@ export default function JoinSubasta(){
                 <Container>
                     <Grid container spacing={5}>
                         <Grid item xs={5} align="left">      
-                            <Box>
+                            <Box style={{ paddingBottom: '20px' }}>
                                 <Typography variant="h1" fontSize={40} className={classes.bold}>
                                     {subasta.subasta}
                                 </Typography>        
-                                <Typography variant="h5">
-                                    Productos en subasta ({ subastaProductos.length}) <br></br>
-                                    Número de render {count.current}   
+                                <Typography>
+                                    Producto en subasta - {productoEnSubastaActual.producto}<br></br>  
+                                    Unidades - {productoEnSubastaActual.stock} <br></br>
                                 </Typography>    
-                                <h6>Subastando producto: {productoEnSubastaActual.producto}</h6>
                             </Box>
 
                             <Grid container spacing={2}>   
