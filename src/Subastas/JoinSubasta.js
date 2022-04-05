@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { Alert, Avatar, Box, Button, Card, CardContent, CardHeader, CardMedia, Container, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
 import proto from '../pb/proto_grpc_web_pb';
 import { makeStyles } from '@material-ui/core/styles';
 import DataGridSubastaOfertas from '../components/DataGridTable';
@@ -249,49 +249,5 @@ export default function JoinSubasta(){
                 </Container>
             </Box>
         </Layout>
-    )
-}
-
-
-/** Lista de productos */
-function StepperListSubastaProductos ({subastaProductos}){
-    const listProductos = subastaProductos && subastaProductos.map((subastaproducto, i) => {
-        return <SubastaProductosCard {...subastaproducto}  key={subastaproducto.id}/>
-    })
-    return (
-        <>   
-            { listProductos }
-        </>
-    )
-}
-
-
-function SubastaProductosCard({producto}){
-    return (
-        <Card align="left">
-            <CardHeader
-                avatar={
-                <Avatar style={{ backgroundColor: 'orange' }} aria-label="recipe">
-                    R
-                </Avatar>
-                }
-                title={ producto.producto }
-                subheader={ 'Inicial: $'+producto.precio_inicial +' / Aumento: $'+producto.precio_aumento+' / Subasta: $'+ producto.precio_subasta }
-            />
-            <CardMedia
-                component="img"
-                height="194"
-                image="https://images.unsplash.com/photo-1535050264505-ba17be3ee504?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-                alt="Paella dish"
-            />
-            <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                Descripción: {producto.descripcion}
-                </Typography>
-                <Typography variant="h5" component="div">
-                    { producto.producto.stock }
-                </Typography>
-            </CardContent>
-        </Card>
     )
 }
