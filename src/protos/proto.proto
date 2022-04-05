@@ -8,8 +8,10 @@ message Subasta {
     string subasta = 2;
     string fecha = 3;
     bool activo = 4;
-    string created_at = 5;
-    string updated_at = 6;
+    int32 duracion = 5;
+    string hora_inicio = 6;
+    string created_at = 7;
+    string updated_at = 8;
 }
 
 message SubastaProducto {

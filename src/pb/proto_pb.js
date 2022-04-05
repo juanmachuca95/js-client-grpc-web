@@ -403,8 +403,10 @@ proto.Subasta.toObject = function(includeInstance, msg) {
     subasta: jspb.Message.getFieldWithDefault(msg, 2, ""),
     fecha: jspb.Message.getFieldWithDefault(msg, 3, ""),
     activo: jspb.Message.getBooleanFieldWithDefault(msg, 4, false),
-    createdAt: jspb.Message.getFieldWithDefault(msg, 5, ""),
-    updatedAt: jspb.Message.getFieldWithDefault(msg, 6, "")
+    duracion: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    horaInicio: jspb.Message.getFieldWithDefault(msg, 6, ""),
+    createdAt: jspb.Message.getFieldWithDefault(msg, 7, ""),
+    updatedAt: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -458,10 +460,18 @@ proto.Subasta.deserializeBinaryFromReader = function(msg, reader) {
       msg.setActivo(value);
       break;
     case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setDuracion(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setHoraInicio(value);
+      break;
+    case 7:
       var value = /** @type {string} */ (reader.readString());
       msg.setCreatedAt(value);
       break;
-    case 6:
+    case 8:
       var value = /** @type {string} */ (reader.readString());
       msg.setUpdatedAt(value);
       break;
@@ -522,17 +532,31 @@ proto.Subasta.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getDuracion();
+  if (f !== 0) {
+    writer.writeInt32(
+      5,
+      f
+    );
+  }
+  f = message.getHoraInicio();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
+      f
+    );
+  }
   f = message.getCreatedAt();
   if (f.length > 0) {
     writer.writeString(
-      5,
+      7,
       f
     );
   }
   f = message.getUpdatedAt();
   if (f.length > 0) {
     writer.writeString(
-      6,
+      8,
       f
     );
   }
@@ -612,28 +636,28 @@ proto.Subasta.prototype.setActivo = function(value) {
 
 
 /**
- * optional string created_at = 5;
- * @return {string}
+ * optional int32 duracion = 5;
+ * @return {number}
  */
-proto.Subasta.prototype.getCreatedAt = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+proto.Subasta.prototype.getDuracion = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
 /**
- * @param {string} value
+ * @param {number} value
  * @return {!proto.Subasta} returns this
  */
-proto.Subasta.prototype.setCreatedAt = function(value) {
-  return jspb.Message.setProto3StringField(this, 5, value);
+proto.Subasta.prototype.setDuracion = function(value) {
+  return jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
 /**
- * optional string updated_at = 6;
+ * optional string hora_inicio = 6;
  * @return {string}
  */
-proto.Subasta.prototype.getUpdatedAt = function() {
+proto.Subasta.prototype.getHoraInicio = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
 };
 
@@ -642,8 +666,44 @@ proto.Subasta.prototype.getUpdatedAt = function() {
  * @param {string} value
  * @return {!proto.Subasta} returns this
  */
-proto.Subasta.prototype.setUpdatedAt = function(value) {
+proto.Subasta.prototype.setHoraInicio = function(value) {
   return jspb.Message.setProto3StringField(this, 6, value);
+};
+
+
+/**
+ * optional string created_at = 7;
+ * @return {string}
+ */
+proto.Subasta.prototype.getCreatedAt = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 7, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Subasta} returns this
+ */
+proto.Subasta.prototype.setCreatedAt = function(value) {
+  return jspb.Message.setProto3StringField(this, 7, value);
+};
+
+
+/**
+ * optional string updated_at = 8;
+ * @return {string}
+ */
+proto.Subasta.prototype.getUpdatedAt = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.Subasta} returns this
+ */
+proto.Subasta.prototype.setUpdatedAt = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 

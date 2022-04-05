@@ -85,10 +85,14 @@ export default function JoinSubasta(){
                 subasta: response.getSubasta(),
                 fecha: response.getFecha(),
                 activo: response.getActivo(),
+                duracion: response.getDuracion(),
+                hora_inicio: response.getHoraInicio(),
                 created_at: response.getCreatedAt(),
                 updated_at: response.getUpdatedAt()
             }
             setSubasta(subasta);
+
+            console.log(subasta)
           }
         });
     }
@@ -208,7 +212,8 @@ export default function JoinSubasta(){
                                         onChange={(e) => setValSubastaOferta(e.target.value)} 
                                         fullWidth 
                                         label="Ofertar" 
-                                        variant="outlined" />
+                                        variant="outlined" 
+                                    />
                                 </Grid>
                                 <Grid item xs={4}>
                                     <Button onClick={handlerCreateSubastaOferta} fullWidth variant="outlined" size="large" 
@@ -226,8 +231,17 @@ export default function JoinSubasta(){
                         </Grid>
 
                         <Grid item xs={7}>  
-                                <StepperVertical steps={subastaProductos}/>
-                           {/*  <StepperListSubastaProductos subastaProductos={subastaProductos}/> */}
+                                
+                            <Box style={{ paddingBottom: '40px', paddingTop: '20px' }}>
+                                <TextField 
+                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'  }}
+                                    style={{ height:'38px' }} 
+                                    variant="outlined" 
+                                />
+                            </Box>
+
+                            <StepperVertical steps={subastaProductos}/>
+                            {/*  <StepperListSubastaProductos subastaProductos={subastaProductos}/> */}
                         </Grid>
                     </Grid>
 
