@@ -1,12 +1,13 @@
 import { Box } from '@mui/material';
 import React, { useState, useEffect } from 'react'
 import SubastasList from '../components/SubastasList';
+import Layout from '../components/Layout/Layout';
 import proto from "../pb/proto_grpc_web_pb"
 
-
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
+export default function Subasta({setToken}) {
 
-export default function Subasta() {
+
   const [subastas, setSubastas] = useState([]);
 
   useEffect(() => {
@@ -39,11 +40,13 @@ export default function Subasta() {
     });
   }
     
-  return (
-      <>  
+  return (    
+    <>
+      <Layout>
         <Box sx={{ paddingTop: 2 }} >
           <SubastasList subastas={subastas} />
         </Box>
-      </>
+      </Layout>
+    </>  
   )
 }

@@ -656,5 +656,118 @@ proto.ProductoServicePromiseClient.prototype.getProducto =
 };
 
 
+/**
+ * @param {string} hostname
+ * @param {?Object} credentials
+ * @param {?grpc.web.ClientOptions} options
+ * @constructor
+ * @struct
+ * @final
+ */
+proto.LoginServiceClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options.format = 'text';
+
+  /**
+   * @private @const {!grpc.web.GrpcWebClientBase} The client
+   */
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+  /**
+   * @private @const {string} The hostname
+   */
+  this.hostname_ = hostname;
+
+};
+
+
+/**
+ * @param {string} hostname
+ * @param {?Object} credentials
+ * @param {?grpc.web.ClientOptions} options
+ * @constructor
+ * @struct
+ * @final
+ */
+proto.LoginServicePromiseClient =
+    function(hostname, credentials, options) {
+  if (!options) options = {};
+  options.format = 'text';
+
+  /**
+   * @private @const {!grpc.web.GrpcWebClientBase} The client
+   */
+  this.client_ = new grpc.web.GrpcWebClientBase(options);
+
+  /**
+   * @private @const {string} The hostname
+   */
+  this.hostname_ = hostname;
+
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.LoginRequest,
+ *   !proto.LoginResponse>}
+ */
+const methodDescriptor_LoginService_Login = new grpc.web.MethodDescriptor(
+  '/LoginService/Login',
+  grpc.web.MethodType.UNARY,
+  proto.LoginRequest,
+  proto.LoginResponse,
+  /**
+   * @param {!proto.LoginRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.LoginResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.LoginRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.LoginResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.LoginResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.LoginServiceClient.prototype.login =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/LoginService/Login',
+      request,
+      metadata || {},
+      methodDescriptor_LoginService_Login,
+      callback);
+};
+
+
+/**
+ * @param {!proto.LoginRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.LoginResponse>}
+ *     Promise that resolves to the response
+ */
+proto.LoginServicePromiseClient.prototype.login =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/LoginService/Login',
+      request,
+      metadata || {},
+      methodDescriptor_LoginService_Login);
+};
+
+
 module.exports = proto;
 

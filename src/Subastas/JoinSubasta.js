@@ -4,6 +4,7 @@ import { Alert, Avatar, Box, Button, Card, CardContent, CardHeader, CardMedia, C
 import proto from '../pb/proto_grpc_web_pb';
 import { makeStyles } from '@material-ui/core/styles';
 import DataGridSubastaOfertas from '../components/DataGridTable';
+import Layout from '../components/Layout/Layout';
 
 
 /** My Client gRPC - to Golang gRPC Server */
@@ -155,7 +156,7 @@ export default function JoinSubasta(){
     }
 
     return (
-        <>
+        <Layout>
             <Box sx={{ paddingTop: 8 }}>
                 <Container>
                     <Grid container spacing={5}>
@@ -219,7 +220,7 @@ export default function JoinSubasta(){
                          
                 </Container>
             </Box>
-        </>
+        </Layout>
     )
 }
 
