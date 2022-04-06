@@ -8,6 +8,8 @@ import Layout from '../components/Layout/Layout';
 import useToken from '../App/useToken';
 import jwt_decode from 'jwt-decode';
 import StepperVertical from '../components/StepperVertical';
+import moment from 'moment';
+
 
 /** My Client gRPC - to Golang gRPC Server */
 var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
@@ -26,16 +28,98 @@ export default function JoinSubasta(){
     const [valSubastaOferta, setValSubastaOferta] = useState(undefined);
     const [user, setUser] = useState({});
     const { token } = useToken();
+    const [fecha, setFecha] = useState("");
+    const [second, setSecond] = useState("00");
+    const [minute, setMinute] = useState("00");
+    const [startCount, setStartCount] = useState(false);
+    const [subastaFinalizada, setSubastaFinalizada] = useState(false);
 
-    const count = useRef(0);
-    useEffect(()=>{
+    useEffect(() => {
+        /** The Subasta */
         getSubasta();
+
+        /** Products from subasta */
         getSubastaProductos();
+
+        /** Ofertas */
         getSubastaOfertas();
 
+        /** Set Data for User */
         getUser();
-        count.current = count.current + 1;
     }, [])
+
+
+    useEffect(() => {
+        if(subasta.fecha && subasta.duracion){
+            let interval = setInterval(()=>{
+                let fecha = new Date(subasta.fecha)
+                let actual = new Date();
+                if(actual < fecha){
+                    fecha = "Comenzará el "+ fecha.toLocaleDateString("es", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) + " a las "+ fecha.getHours()+":"+fecha.getSeconds()+".";
+                    setFecha(fecha);
+
+                    setStartCount(false);
+                    return ;
+                }
+
+                if(actual.getTime() == fecha.getTime()){
+                    fecha = "La subasta ha comenzado";
+                    setFecha(fecha)
+
+                    setStartCount(true);
+                    return ;
+                }
+
+                if(actual > fecha && !subastaFinalizada){
+                    fecha = "La subasta ha comenzado a las "+ fecha.getHours()+":"+fecha.getMinutes();
+                    setFecha(fecha)
+
+                    setStartCount(true);
+                    return ;
+                }
+            }, 1000)
+        }
+    }, [subasta.fecha, subasta.duracion]) // Se ejecuta cuando la variable fecha esta lista
+
+
+    useEffect(() => {
+         if(startCount){
+            console.log("Comenzar la cuenta regresiva");
+
+            var duration = moment.duration({
+                'minutes': subasta.duracion,
+                'seconds': 0  
+            });
+            
+            let eventDay = moment(subasta.fecha);
+            eventDay.add(subasta.duracion, 'minutes');
+
+            var timestamp = new Date(eventDay);
+            var interval = 1;
+            var timer = setInterval(function() {
+                timestamp = new Date(timestamp.getTime() + interval * 1000);
+                duration = moment.duration(duration.asSeconds() - interval, 'seconds');
+                var min = duration.minutes();
+                var sec = duration.seconds();
+
+                sec -= 1;
+                if (min < 0) return clearInterval(timer);
+                if (min < 10 && min.length != 2) min = '0' + min;
+                if (sec < 0 && min != 0) {
+                    min -= 1;
+                    sec = 59;
+                } else if (sec < 10 && sec.length != 2) sec = '0' + sec;
+                setSecond(sec);
+                setMinute(min);
+                if (min == 0 && sec == 0){
+                    clearInterval(timer);
+                    setStartCount(false);
+                }
+
+            }, 1000);
+        }
+
+    }, [startCount])
 
     const getUser = () => {
         console.log("token. . . .", token)
@@ -66,7 +150,6 @@ export default function JoinSubasta(){
             }
 
             setRows((rows) => [...rows, record])
-            //console.log(record)
         })
 
     };
@@ -77,23 +160,20 @@ export default function JoinSubasta(){
         var metadata = {};
     
         subastaService.getSubasta(request, metadata, (err, response) => {
-          if (err) {
-            console.log(err.code, err.message);
-          } else {
-            let subasta = {
-                id: response.getId(),
-                subasta: response.getSubasta(),
-                fecha: response.getFecha(),
-                activo: response.getActivo(),
-                duracion: response.getDuracion(),
-                hora_inicio: response.getHoraInicio(),
-                created_at: response.getCreatedAt(),
-                updated_at: response.getUpdatedAt()
+            if (err) {
+                console.log(err.code, err.message);
+            } else {
+                let subasta = {
+                    id: response.getId(),
+                    subasta: response.getSubasta(),
+                    fecha: response.getFecha(),
+                    activo: response.getActivo(),
+                    duracion: response.getDuracion(),
+                    created_at: response.getCreatedAt(),
+                    updated_at: response.getUpdatedAt()
+                }
+                setSubasta(subasta);
             }
-            setSubasta(subasta);
-
-            console.log(subasta)
-          }
         });
     }
 
@@ -163,9 +243,8 @@ export default function JoinSubasta(){
         subastaOfertaCreate.setOfertaPrecio(valSubastaOferta);
         subastaOfertaCreate.setSubastasProductosId(1);
 
-        subastaService.addSubastaOferta(subastaOfertaCreate, {}, (error, response) => {
+        subastaService.addSubastaOferta(subastaOfertaCreate, {}, (error, _) => {
             if(error !== null) console.log(error.code, error.message);
-            console.log(response)
         });
 
         setValSubastaOferta(undefined)
@@ -183,14 +262,14 @@ export default function JoinSubasta(){
                                     {subasta.subasta}
                                 </Typography>        
                                 <Typography>
-                                    Producto en subasta - {productoEnSubastaActual.producto}<br></br>  
+                                    Subastando - {productoEnSubastaActual.producto}<br></br>  
                                     Unidades - {productoEnSubastaActual.stock} <br></br>
                                 </Typography>    
                             </Box>
 
-                            <Grid container spacing={2}>   
+                            <Grid container>   
                                 {winnerOferta > 0 &&
-                                <Grid item xs={12}>
+                                <Grid item xs={12} paddingY={4}>
                                     <Alert  variant="outlined" severity="success">
                                         Oferta ganadora: { winnerOferta }
                                     </Alert>
@@ -199,10 +278,10 @@ export default function JoinSubasta(){
 
 
                                 {error_message !== '' &&
-                                <Grid item xs={12}> 
+                                <Grid item xs={12} paddingBottom={4}> 
                                     <Alert severity="error">{ error_message }</Alert>  
-                                </Grid>                            
-                                }
+                                </Grid>}
+
                                 <Grid item xs={8}>
                                     <TextField 
                                         inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'  }}
@@ -232,11 +311,21 @@ export default function JoinSubasta(){
                         <Grid item xs={7}>  
                                 
                             <Box style={{ paddingBottom: '40px', paddingTop: '20px' }}>
-                                <TextField 
-                                    inputProps={{ inputMode: 'numeric', pattern: '[0-9]*'  }}
-                                    style={{ height:'38px' }} 
-                                    variant="outlined" 
-                                />
+                                <Typography align='center'>
+                                    {fecha} 
+                                </Typography>
+                                
+                                {startCount && 
+                                <div style={{ display:'flex', justifyContent:'center', width:'100%' }}>
+                                    <Box padding={2} sx={{ borderRadius: 1, backgroundColor: '#e6e6e6', margin: 1 }}>
+                                        {minute}
+                                    </Box>
+                                
+                                    <Box padding={2} sx={{ borderRadius: 1, backgroundColor: '#e6e6e6', margin: 1 }}>
+                                        {second}
+                                    </Box>
+                                </div>}
+
                             </Box>
 
                             <StepperVertical steps={subastaProductos}/>

@@ -46,7 +46,6 @@ export default function VerticalLinearStepper({steps}) {
                 <Box sx={{ mb: 2, mt:4 }}>
                     <div>
                     <Button
-                        disabled
                         align="left"
                         variant="contained"
                         onClick={handleNext}
