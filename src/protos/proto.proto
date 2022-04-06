@@ -19,6 +19,7 @@ message SubastaProducto {
     bool activo = 3;
     float oferta_final = 4;
     int32 subastas_ofertas_id_winner = 5;
+    string status = 6;
 }
 
 message SubastaProductos {

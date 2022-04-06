@@ -713,7 +713,8 @@ proto.SubastaProducto.toObject = function(includeInstance, msg) {
     producto: (f = msg.getProducto()) && proto.Producto.toObject(includeInstance, f),
     activo: jspb.Message.getBooleanFieldWithDefault(msg, 3, false),
     ofertaFinal: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
-    subastasOfertasIdWinner: jspb.Message.getFieldWithDefault(msg, 5, 0)
+    subastasOfertasIdWinner: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    status: jspb.Message.getFieldWithDefault(msg, 6, "")
   };
 
   if (includeInstance) {
@@ -770,6 +771,10 @@ proto.SubastaProducto.deserializeBinaryFromReader = function(msg, reader) {
     case 5:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setSubastasOfertasIdWinner(value);
+      break;
+    case 6:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setStatus(value);
       break;
     default:
       reader.skipField();
@@ -833,6 +838,13 @@ proto.SubastaProducto.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       5,
+      f
+    );
+  }
+  f = message.getStatus();
+  if (f.length > 0) {
+    writer.writeString(
+      6,
       f
     );
   }
@@ -945,6 +957,24 @@ proto.SubastaProducto.prototype.getSubastasOfertasIdWinner = function() {
  */
 proto.SubastaProducto.prototype.setSubastasOfertasIdWinner = function(value) {
   return jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional string status = 6;
+ * @return {string}
+ */
+proto.SubastaProducto.prototype.getStatus = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.SubastaProducto} returns this
+ */
+proto.SubastaProducto.prototype.setStatus = function(value) {
+  return jspb.Message.setProto3StringField(this, 6, value);
 };
 
 

@@ -37,7 +37,7 @@ export default function VerticalLinearStepper({steps}) {
                 ) : null
               }
             >
-              {step.producto.producto}
+              {step.producto.producto} ({step.status})
             </StepLabel>
             <StepContent>
                 {/* -- Card Producto - */}

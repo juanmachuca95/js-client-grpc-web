@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Alert, Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
 import proto from '../pb/proto_grpc_web_pb';
@@ -17,12 +17,21 @@ var subastaService = new proto.SubastaServiceClient('http://0.0.0.0:8000');
 
 export default function JoinSubasta(){
     const { id } = useParams();
+
+    /** Info Subasta */
     const [subasta, setSubasta] = useState({});
+
+    /** Lista de productos en subasta */
     const [subastaProductos, setSubastaProductos] = useState([]);
+
+    /** Producto actual en Subasta */
     const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
+
+    /** Producto subasta */
+    const [subastaProductoActual, setSubastaProductoActual] = useState(0);
+    
+    /** Error form add oferta */
     const [error_message, setErrorMessage] = useState('')
-    const [winnerOferta, setWinnerOferta] = useState(0)
-    const useStyles = makeStyles({bold: {fontWeight: 600}})
     const classes = useStyles();
     const [rows, setRows] = useState([]);
     const [valSubastaOferta, setValSubastaOferta] = useState(undefined);
@@ -33,6 +42,7 @@ export default function JoinSubasta(){
     const [minute, setMinute] = useState("00");
     const [startCount, setStartCount] = useState(false);
     const [subastaFinalizada, setSubastaFinalizada] = useState(false);
+    const useStyles = makeStyles({bold: {fontWeight: 600}})
 
     useEffect(() => {
         /** The Subasta */
@@ -206,16 +216,36 @@ export default function JoinSubasta(){
                                     direccion: subastaProducto.array[1][7][3],
                                     ciudad: subastaProducto.array[1][7][4],
                                     iva: subastaProducto.array[1][7][5],
-                                }
-                            }
+                                },
+                            },
+                            activo: subastaProducto.array[2],
+                            oferta_final: subastaProducto.array[3],
+                            subastas_ofertas_id_winner: subastaProducto.array[4],
+                            status: subastaProducto.array[5]
                         }
                     })
 
+                    console.log(subastaProductosList)
+
                 setSubastaProductos(subastaProductosList);
-                setProductoEnSubastaActual(subastaProductosList[0].producto) // producto en subasta
+                //setProductoEnSubastaActual(subastaProductosList[0].producto) // producto en subasta
             }
         });
     }
+
+
+    useEffect(()=>{
+        if(subastaProductos){
+            let findNextProducto = false;
+            subastaProductos.forEach(element => {
+                if(element.status === "en espera" && !findNextProducto){
+                    setSubastaProductoActual(element)
+                    setProductoEnSubastaActual(element.producto)
+                    findNextProducto = true;
+                }
+            });
+        }
+    }, [subastaProductos])
 
 
     const handlerCreateSubastaOferta = (e) => {
@@ -273,8 +303,7 @@ export default function JoinSubasta(){
                                     <Alert  variant="outlined" severity="success">
                                         Oferta ganadora: { winnerOferta }
                                     </Alert>
-                                </Grid>
-                                }
+                                </Grid>}
 
 
                                 {error_message !== '' &&
