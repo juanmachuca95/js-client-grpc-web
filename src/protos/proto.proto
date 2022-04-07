@@ -20,6 +20,7 @@ message SubastaProducto {
     float oferta_final = 4;
     int32 subastas_ofertas_id_winner = 5;
     string status = 6;
+    int32 orden = 7;
 }
 
 message SubastaProductos {

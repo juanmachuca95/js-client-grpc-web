@@ -10,8 +10,8 @@ import Typography from '@mui/material/Typography';
 import CardItemProducto from './Card';
 
 
-export default function VerticalLinearStepper({steps}) {
-  const [activeStep, setActiveStep] = React.useState(0);
+export default function VerticalLinearStepper({steps, actual}) {
+  const [activeStep, setActiveStep] = React.useState(actual);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -32,7 +32,7 @@ export default function VerticalLinearStepper({steps}) {
           <Step key={step.id}>
             <StepLabel
               optional={
-                index === 2 ? (
+                index === steps.length-1 ? (
                   <Typography variant="caption">Last step</Typography>
                 ) : null
               }

@@ -49,6 +49,11 @@ export default function JoinSubasta(){
     const [duracion, setDuracion] = useState();
     const [fin, setFin] = useState();
 
+    const handleDrawer = () => {
+        // Access the handleToggle function of the drawer reference
+        this.refs.customDrawerReference.handleNext();
+    }
+
     useEffect(() => {
         /** The Subasta */
         getSubasta();
@@ -89,6 +94,7 @@ export default function JoinSubasta(){
         console.log(inicio, duracion, productoEnSubastaActual);
 
         if(inicio && duracion && productoEnSubastaActual){
+
             let interval = setInterval(() => {
                 let _fecha = moment(inicio)
                 let actual = moment();
@@ -237,7 +243,8 @@ export default function JoinSubasta(){
                             activo: subastaProducto.array[2],
                             oferta_final: subastaProducto.array[3],
                             subastas_ofertas_id_winner: subastaProducto.array[4],
-                            status: subastaProducto.array[5]
+                            status: subastaProducto.array[5],
+                            orden: response.array[6],
                         }
                     })
                 setSubastaProductos(subastaProductosList);
@@ -286,9 +293,11 @@ export default function JoinSubasta(){
                     activo: response.array[2],
                     oferta_final: response.array[3],
                     subastas_ofertas_id_winner: response.array[4],
-                    status: response.array[5]
+                    status: response.array[5],
+                    orden: response.array[6],
                 }
-    
+                
+                console.log(" ORDENNNNN ... ", subastaProducto.orden);
                 setSubastaProductoActual(subastaProducto)
                 setProductoEnSubastaActual(subastaProducto.producto);
             }
@@ -402,9 +411,8 @@ export default function JoinSubasta(){
                                 </div>}
 
                             </Box>
-
-                            <StepperVertical steps={subastaProductos}/>
-                            {/*  <StepperListSubastaProductos subastaProductos={subastaProductos}/> */}
+                            {console.log("el ordern del producto actual es  ----> ", subastaProductoActual.orden)}
+                            {subastaProductoActual && <StepperVertical steps={subastaProductos} actual={subastaProductoActual.orden} />}
                         </Grid>
                     </Grid>
 
