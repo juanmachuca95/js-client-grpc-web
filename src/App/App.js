@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import React, { useState } from "react";
+import React from "react";
 import "../App.css";
 import { Routes, Route } from "react-router-dom";
 import Login from "../Login";
@@ -9,7 +9,6 @@ import useToken from './useToken';
 
 function App(){
   const { token, setToken } = useToken();
-  console.log(token)
 
   if(!token){
     return <Login setToken={setToken} />

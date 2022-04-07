@@ -72,67 +72,6 @@ proto.SubastaServicePromiseClient =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.SubastaId,
- *   !proto.Subasta>}
- */
-const methodDescriptor_SubastaService_GetSubasta = new grpc.web.MethodDescriptor(
-  '/SubastaService/GetSubasta',
-  grpc.web.MethodType.UNARY,
-  proto.SubastaId,
-  proto.Subasta,
-  /**
-   * @param {!proto.SubastaId} request
-   * @return {!Uint8Array}
-   */
-  function(request) {
-    return request.serializeBinary();
-  },
-  proto.Subasta.deserializeBinary
-);
-
-
-/**
- * @param {!proto.SubastaId} request The
- *     request proto
- * @param {?Object<string, string>} metadata User defined
- *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.Subasta)}
- *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.Subasta>|undefined}
- *     The XHR Node Readable Stream
- */
-proto.SubastaServiceClient.prototype.getSubasta =
-    function(request, metadata, callback) {
-  return this.client_.rpcCall(this.hostname_ +
-      '/SubastaService/GetSubasta',
-      request,
-      metadata || {},
-      methodDescriptor_SubastaService_GetSubasta,
-      callback);
-};
-
-
-/**
- * @param {!proto.SubastaId} request The
- *     request proto
- * @param {?Object<string, string>=} metadata User defined
- *     call metadata
- * @return {!Promise<!proto.Subasta>}
- *     Promise that resolves to the response
- */
-proto.SubastaServicePromiseClient.prototype.getSubasta =
-    function(request, metadata) {
-  return this.client_.unaryCall(this.hostname_ +
-      '/SubastaService/GetSubasta',
-      request,
-      metadata || {},
-      methodDescriptor_SubastaService_GetSubasta);
-};
-
-
-/**
- * @const
- * @type {!grpc.web.MethodDescriptor<
  *   !proto.Empty,
  *   !proto.Subastas>}
  */
@@ -249,6 +188,67 @@ proto.SubastaServicePromiseClient.prototype.getSubastaProducto =
       request,
       metadata || {},
       methodDescriptor_SubastaService_GetSubastaProducto);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.SubastaId,
+ *   !proto.Subasta>}
+ */
+const methodDescriptor_SubastaService_GetSubasta = new grpc.web.MethodDescriptor(
+  '/SubastaService/GetSubasta',
+  grpc.web.MethodType.UNARY,
+  proto.SubastaId,
+  proto.Subasta,
+  /**
+   * @param {!proto.SubastaId} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.Subasta.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.SubastaId} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.Subasta)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.Subasta>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.SubastaServiceClient.prototype.getSubasta =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/SubastaService/GetSubasta',
+      request,
+      metadata || {},
+      methodDescriptor_SubastaService_GetSubasta,
+      callback);
+};
+
+
+/**
+ * @param {!proto.SubastaId} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.Subasta>}
+ *     Promise that resolves to the response
+ */
+proto.SubastaServicePromiseClient.prototype.getSubasta =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/SubastaService/GetSubasta',
+      request,
+      metadata || {},
+      methodDescriptor_SubastaService_GetSubasta);
 };
 
 
@@ -427,6 +427,67 @@ proto.SubastaServicePromiseClient.prototype.addSubastaOferta =
       request,
       metadata || {},
       methodDescriptor_SubastaService_AddSubastaOferta);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.SubastaProductoId,
+ *   !proto.Empty>}
+ */
+const methodDescriptor_SubastaService_SetProductoEnSubasta = new grpc.web.MethodDescriptor(
+  '/SubastaService/SetProductoEnSubasta',
+  grpc.web.MethodType.UNARY,
+  proto.SubastaProductoId,
+  proto.Empty,
+  /**
+   * @param {!proto.SubastaProductoId} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.Empty.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.SubastaProductoId} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.Empty)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.Empty>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.SubastaServiceClient.prototype.setProductoEnSubasta =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/SubastaService/SetProductoEnSubasta',
+      request,
+      metadata || {},
+      methodDescriptor_SubastaService_SetProductoEnSubasta,
+      callback);
+};
+
+
+/**
+ * @param {!proto.SubastaProductoId} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.Empty>}
+ *     Promise that resolves to the response
+ */
+proto.SubastaServicePromiseClient.prototype.setProductoEnSubasta =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/SubastaService/SetProductoEnSubasta',
+      request,
+      metadata || {},
+      methodDescriptor_SubastaService_SetProductoEnSubasta);
 };
 
 
