@@ -715,7 +715,8 @@ proto.SubastaProducto.toObject = function(includeInstance, msg) {
     ofertaFinal: jspb.Message.getFloatingPointFieldWithDefault(msg, 4, 0.0),
     subastasOfertasIdWinner: jspb.Message.getFieldWithDefault(msg, 5, 0),
     status: jspb.Message.getFieldWithDefault(msg, 6, ""),
-    orden: jspb.Message.getFieldWithDefault(msg, 7, 0)
+    orden: jspb.Message.getFieldWithDefault(msg, 7, 0),
+    inicio: jspb.Message.getFieldWithDefault(msg, 8, "")
   };
 
   if (includeInstance) {
@@ -780,6 +781,10 @@ proto.SubastaProducto.deserializeBinaryFromReader = function(msg, reader) {
     case 7:
       var value = /** @type {number} */ (reader.readInt32());
       msg.setOrden(value);
+      break;
+    case 8:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setInicio(value);
       break;
     default:
       reader.skipField();
@@ -857,6 +862,13 @@ proto.SubastaProducto.serializeBinaryToWriter = function(message, writer) {
   if (f !== 0) {
     writer.writeInt32(
       7,
+      f
+    );
+  }
+  f = message.getInicio();
+  if (f.length > 0) {
+    writer.writeString(
+      8,
       f
     );
   }
@@ -1005,6 +1017,24 @@ proto.SubastaProducto.prototype.getOrden = function() {
  */
 proto.SubastaProducto.prototype.setOrden = function(value) {
   return jspb.Message.setProto3IntField(this, 7, value);
+};
+
+
+/**
+ * optional string inicio = 8;
+ * @return {string}
+ */
+proto.SubastaProducto.prototype.getInicio = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 8, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.SubastaProducto} returns this
+ */
+proto.SubastaProducto.prototype.setInicio = function(value) {
+  return jspb.Message.setProto3StringField(this, 8, value);
 };
 
 

@@ -21,6 +21,7 @@ message SubastaProducto {
     int32 subastas_ofertas_id_winner = 5;
     string status = 6;
     int32 orden = 7;
+    string inicio = 8;
 }
 
 message SubastaProductos {
@@ -54,7 +55,8 @@ message Empty {}
 
 service SubastaService {
     rpc GetSubastas(Empty) returns (Subastas){}; // Listado de subastas disponibles
-    rpc GetSubastaProducto(SubastaId) returns (SubastaProducto){}
+    rpc GetSubastaProductoEnSubasta(SubastaId) returns (SubastaProducto){} // Obtener el producto en subasta actualmente
+    rpc GetSubastaProductoEnEspera(SubastaId) returns (SubastaProducto){} // Obtener el producto en espera segun orden
     rpc GetSubasta(SubastaId) returns (Subasta) {}; // Get de una subasta en especifico
     rpc GetSubastaProductos(SubastaId) returns (SubastaProductos){} // Listado de productos en subasta
     rpc GetSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){} // Muestra las ofertas sobre un producto en subasta

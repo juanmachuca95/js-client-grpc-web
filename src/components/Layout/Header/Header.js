@@ -26,7 +26,6 @@ function Header(){
     }
 
     const getUser = () => {
-        console.log("token. . . .", token)
         var token_decoded = jwt_decode(token);
         let user = {
             users_id: token_decoded.users_id,

@@ -24,10 +24,10 @@ export default function JoinSubasta(){
     const [subastaProductos, setSubastaProductos] = useState([]);
 
     /** Producto actual en Subasta */
-    const [productoEnSubastaActual, setProductoEnSubastaActual] = useState(0);
+    const [productoEnSubastaActual, setProductoEnSubastaActual] = useState([]);
 
     /** Producto subasta */
-    const [subastaProductoActual, setSubastaProductoActual] = useState(0);
+    const [productoActual, setProductoActual] = useState([]);
     
     /** Set Precio de oferta */
     const [winnerOferta, setWinnerOferta] = useState([]);
@@ -44,25 +44,25 @@ export default function JoinSubasta(){
     const [startCount, setStartCount] = useState(false);
     const [subastaFinalizada, setSubastaFinalizada] = useState(false);
     
+    /** Step producto */
+    const [productoStep, setProductoStep] = useState();
+
     /** Controles de tiempo */
     const [inicio, setInicio] = useState();
     const [duracion, setDuracion] = useState();
     const [fin, setFin] = useState();
 
-    const handleDrawer = () => {
-        // Access the handleToggle function of the drawer reference
-        this.refs.customDrawerReference.handleNext();
-    }
-
     useEffect(() => {
         /** The Subasta */
         getSubasta();
 
-        /** Products from subasta */
+        /** Products from subasta */        
         getSubastaProductos();
 
         /** Ofertas */
-        //getSubastaOfertas();
+        if(startCount){
+            getSubastaOfertas();
+        }
 
         /** Set Data for User */
         getUser();
@@ -91,10 +91,7 @@ export default function JoinSubasta(){
 
     /** Hacer generica la funcion para reutilizarla en el proximo producto */
     useEffect(() => {
-        console.log(inicio, duracion, productoEnSubastaActual);
-
-        if(inicio && duracion && productoEnSubastaActual){
-
+        if(duracion !== undefined && inicio !== undefined){
             let interval = setInterval(() => {
                 let _fecha = moment(inicio)
                 let actual = moment();
@@ -119,22 +116,23 @@ export default function JoinSubasta(){
                     clearInterval(interval);
                     return ;
                 }
+                
 
                 var diferencia = _fecha.diff(actual, 'minute');
                 var dif_seconds = _fecha.diff(actual, 'second');
 
-                if (diferencia == 0 && dif_seconds == 0){                                        
-                    let fecha = "Ha comenzado la subasta . . .";
-                    setFecha(fecha);
+               /*  if (diferencia == 0 && dif_seconds == 0){                                        
+                  
                     setStartCount(true);
-
                     return ;
                 }
-
+ */
                 if (diferencia <= 0 && dif_seconds <= 0){
-                    console.log(diferencia, " --------- DENTRO DEL TIEMPO DE SUBASTA --------- ", dif_seconds);
-                    let min = (diferencia !== 0) ? (diferencia*-1) : diferencia;
-                    let segundo = (dif_seconds !== 0) ? (dif_seconds*-1) : dif_seconds;
+                    let fecha = "Ha comenzado la subasta";
+                    setFecha(fecha);
+                    console.log(" --------- DENTRO DEL TIEMPO DE SUBASTA --------- ");
+                    let min = (diferencia_tiempo_maximo !== 0) ? (diferencia_tiempo_maximo*-1) : diferencia_tiempo_maximo;
+                    let segundo = (diferencia_t_m_seconds !== 0) ? ((diferencia_t_m_seconds*-1)-(min*60)) : diferencia_t_m_seconds;
 
                     setMinute(min);
                     setSecond(segundo);
@@ -149,7 +147,7 @@ export default function JoinSubasta(){
                 }
             }, 1000)
         }
-    }, [inicio, duracion, productoEnSubastaActual]) // Se ejecuta cuando la variable fecha esta lista
+    }, [inicio, duracion]) // Se ejecuta cuando la variable fecha esta lista
 
     const getUser = () => {
         var token_decoded = jwt_decode(token);
@@ -245,6 +243,7 @@ export default function JoinSubasta(){
                             subastas_ofertas_id_winner: subastaProducto.array[4],
                             status: subastaProducto.array[5],
                             orden: response.array[6],
+                            inicio: response.array[7],
                         }
                     })
                 setSubastaProductos(subastaProductosList);
@@ -252,55 +251,47 @@ export default function JoinSubasta(){
         });
     }
 
-
+    /** Importante obtener el producto actual en subasta o si no setear el producto que debe subastarse */
     useEffect(() => {
-        if(subastaProductos){ getProductoEnSubasta();}
-    }, [subastaProductos])
+        getProductoEnSubasta();
+    }, []) // sin [] se ejecuta varias veces 
 
+    /** Set producto actual en Stepper */
+    useEffect(() => {
+        if(productoEnSubastaActual.orden){
+            let orden = productoEnSubastaActual.orden;
+            setProductoStep(orden);
+        }
+    }, [productoEnSubastaActual.orden]);
+
+    /** Obtener el producto en subasta si ya existe --- o si no crearlo */
     const getProductoEnSubasta = () => {
         let request = new proto.SubastaId()
         request.setId(id) // id from params
 
-        subastaService.getSubastaProducto(request, {}, (error, response) => {
+        subastaService.getSubastaProductoEnSubasta(request, {}, (error, response) => {
+            console.log("Error al obtener producto en subasta: ", error.code, error.message);
             if(error){
-                subastaProductos.forEach(element => {
-                    if (element.status === "en espera"){
-                        setProductoEnSubastaActual(element.producto);
-                        setSubastaProductoActual(element)
-                        return ;
+                subastaService.getSubastaProductoEnEspera(request, {}, (error, response) => {
+                    if(!error) {
+                        let subastaProductoActual = SetterSubastaProducto(response);
+                        setProductoEnSubastaActual(subastaProductoActual);                       
+                        let producto = subastaProductoActual.producto;
+                        setProductoActual(producto);
+
+                        let inicio = (subastaProductoActual.inicio === undefined) ? subasta.inicio : subastaProductoActual.inicio;
+                        setInicio(inicio); // Inicio de subasta para este producto. 
+                        
                     }
-                });
-            }else{
-                let subastaProducto = {
-                    id: response.array[0],
-                    producto: {
-                        productos_id: response.array[1][0],
-                        producto: response.array[1][1],
-                        descripcion: response.array[1][2],
-                        stock: response.array[1][3],
-                        precio_inicial: response.array[1][4],
-                        precio_aumento: response.array[1][5],
-                        precio_subasta: response.array[1][6],
-                        cliente: {
-                            cliente_id: response.array[1][7][0],
-                            cliente: response.array[1][7][1],
-                            cuit: response.array[1][7][2],
-                            direccion: response.array[1][7][3],
-                            ciudad: response.array[1][7][4],
-                            iva: response.array[1][7][5],
-                        },
-                    },
-                    activo: response.array[2],
-                    oferta_final: response.array[3],
-                    subastas_ofertas_id_winner: response.array[4],
-                    status: response.array[5],
-                    orden: response.array[6],
-                }
-                
-                console.log(" ORDENNNNN ... ", subastaProducto.orden);
-                setSubastaProductoActual(subastaProducto)
-                setProductoEnSubastaActual(subastaProducto.producto);
+                })
             }
+
+            if(!error){
+                let subastaProducto = SetterSubastaProducto(response)            
+                setProductoEnSubastaActual(subastaProducto);
+                setProductoActual(subastaProducto.producto)
+            }
+
 
         })
     }
@@ -308,20 +299,19 @@ export default function JoinSubasta(){
 
     const handlerCreateSubastaOferta = (e) => {
         e.preventDefault();
-
-        if(!(valSubastaOferta !== "" && valSubastaOferta > productoEnSubastaActual.precio_inicial)) {
+        if(!(valSubastaOferta !== "" && valSubastaOferta > productoActual.precio_inicial)) {
             setErrorMessage('El valor de oferta de ser superior o igual al precio inicial.');
             return ;
         }
 
         var ofertaGanadora = 0;
         if(winnerOferta === 0) {
-            ofertaGanadora = productoEnSubastaActual.precio_inicial} 
+            ofertaGanadora = productoActual.precio_inicial} 
         else {
             ofertaGanadora = winnerOferta;
         };
-        console.log(winnerOferta, productoEnSubastaActual.precio_inicial, ofertaGanadora+productoEnSubastaActual.precio_aumento)
-        if(!(valSubastaOferta >= (ofertaGanadora+productoEnSubastaActual.precio_aumento))){
+        console.log(winnerOferta, productoActual.precio_inicial, ofertaGanadora+productoActual.precio_aumento)
+        if(!(valSubastaOferta >= (ofertaGanadora+productoActual.precio_aumento))){
             setErrorMessage('El valor de oferta de ser superior o igual al precio ganador + el precio de aumento del producto.');
             return ;
         } 
@@ -339,6 +329,38 @@ export default function JoinSubasta(){
         document.getElementById('valSubastaOferta').value = '';
     }
 
+
+    const SetterSubastaProducto = (response) => {
+        let subastaProducto = {
+            id: response.array[0],
+            producto: {
+                productos_id: response.array[1][0],
+                producto: response.array[1][1],
+                descripcion: response.array[1][2],
+                stock: response.array[1][3],
+                precio_inicial: response.array[1][4],
+                precio_aumento: response.array[1][5],
+                precio_subasta: response.array[1][6],
+                cliente: {
+                    cliente_id: response.array[1][7][0],
+                    cliente: response.array[1][7][1],
+                    cuit: response.array[1][7][2],
+                    direccion: response.array[1][7][3],
+                    ciudad: response.array[1][7][4],
+                    iva: response.array[1][7][5],
+                },
+            },
+            activo: response.array[2],
+            oferta_final: response.array[3],
+            subastas_ofertas_id_winner: response.array[4],
+            status: response.array[5],
+            orden: response.array[6],
+            inicio: response.array[7],
+        };
+
+        return subastaProducto;
+    }
+
     return (
         <Layout>
             <Box sx={{ paddingTop: 8 }}>
@@ -348,11 +370,14 @@ export default function JoinSubasta(){
                             <Box style={{ paddingBottom: '20px' }}>
                                 <Typography variant="h1" fontSize={40}>
                                     {subasta.subasta}
-                                </Typography>        
-                                <Typography>
-                                    Subastando - {productoEnSubastaActual.producto} / {subastaProductoActual.status} <br></br>  
-                                    Unidades - {productoEnSubastaActual.stock} <br></br>
-                                </Typography>    
+                                </Typography> 
+
+                                {productoEnSubastaActual !== undefined && productoActual !== undefined && <Typography fontSize="small">
+                                    Subastando - {productoActual.producto} / {productoEnSubastaActual.status} <br></br>  
+                                    Unidades - {productoActual.stock} <br></br>
+                                    Inicio - {productoEnSubastaActual.inicio} <br></br>
+                                    Orden - {productoEnSubastaActual.orden}
+                                </Typography>}    
                             </Box>
 
 
@@ -411,8 +436,7 @@ export default function JoinSubasta(){
                                 </div>}
 
                             </Box>
-                            {console.log("el ordern del producto actual es  ----> ", subastaProductoActual.orden)}
-                            {subastaProductoActual && <StepperVertical steps={subastaProductos} actual={subastaProductoActual.orden} />}
+                            {productoStep && subastaProductos && startCount && <StepperVertical steps={subastaProductos} actual={productoStep-1} />}
                         </Grid>
                     </Grid>
 
@@ -422,3 +446,5 @@ export default function JoinSubasta(){
         </Layout>
     )
 }
+
+
