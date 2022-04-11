@@ -30,7 +30,8 @@ export default function JoinSubasta(){
     const [productoActual, setProductoActual] = useState([]);
     
     /** Set Precio de oferta */
-    const [winnerOferta, setWinnerOferta] = useState([]);
+    const [winnerUser, setWinnerUser] = useState();
+    const [winnerOferta, setWinnerOferta] = useState(0);
 
     /** Error form add oferta */
     const [error_message, setErrorMessage] = useState('')
@@ -59,35 +60,9 @@ export default function JoinSubasta(){
         /** Products from subasta */        
         getSubastaProductos();
 
-        /** Ofertas */
-        if(startCount){
-            getSubastaOfertas();
-        }
-
         /** Set Data for User */
         getUser();
-
-
-        getTest();
     }, [])
-
-    const getTest = () => {
-        var fecha1 = moment("2022-04-07 09:30:00");
-        var fecha2 = moment("2022-04-07 09:30:00");
-
-        /*   
-        console.log("fecha1: ", fecha1);
-        console.log("fecha2: ", fecha2);
-
-        console.log(fecha2.diff(fecha1, 'minutes'), "diferencia en minutos");
-        
-
-        console.log("Se agrego 10 minutos a la fecha 2");
-        fecha2.add(10, 'minute');
-        console.log(fecha2.diff(fecha1, 'minutes'), "diferencia en minutos");
-
-        */
-    }
 
     /** Hacer generica la funcion para reutilizarla en el proximo producto */
     useEffect(() => {
@@ -101,32 +76,36 @@ export default function JoinSubasta(){
                 let diferencia_tiempo_maximo = actual.diff(tiempo_maximo, 'minute');
                 let diferencia_t_m_seconds = actual.diff(tiempo_maximo, 'second');
                 
-                if(actual > tiempo_maximo){ // Llego tarde.
+                
+                //console.log("diferencia tiempo maximo ", diferencia_tiempo_maximo, " ", diferencia_t_m_seconds);
+                if(diferencia_tiempo_maximo > 0 && diferencia_t_m_seconds > 0){ // Llego tarde.
                     let fecha = "Ya ha finalizado este fragmento de subasta . . . "
                     setFecha(fecha);
+                    
                     setStartCount(false);
-                    clearInterval(interval);
                     return ;
                 }
 
                 if(diferencia_tiempo_maximo == 0 && diferencia_t_m_seconds == 0){ // quedo no tocar
                     let fecha = "El tiempo de subasta de este producto ha terminado . . . "
                     setFecha(fecha);
+
+
+                    setUpdateProductoEnSubasta();
                     setStartCount(false);
+
                     clearInterval(interval);
                     return ;
                 }
+
+                
                 
 
                 var diferencia = _fecha.diff(actual, 'minute');
                 var dif_seconds = _fecha.diff(actual, 'second');
 
-               /*  if (diferencia == 0 && dif_seconds == 0){                                        
-                  
-                    setStartCount(true);
-                    return ;
-                }
- */
+
+                /** Dentro de la subasta */
                 if (diferencia <= 0 && dif_seconds <= 0){
                     let fecha = "Ha comenzado la subasta";
                     setFecha(fecha);
@@ -149,6 +128,35 @@ export default function JoinSubasta(){
         }
     }, [inicio, duracion]) // Se ejecuta cuando la variable fecha esta lista
 
+    /** Subasta Oferta Winn y Ofertas */
+    useEffect(() => {
+        setInterval(()=>{
+            getSubastaOfertaWinner();
+        }, 500)
+        getStreamSubastaOfertas();
+    }, [startCount, productoEnSubastaActual])
+
+    const getSubastaOfertaWinner = () => {
+        let request = new proto.SubastaProductoId();
+        request.setId(productoEnSubastaActual.id);
+
+        subastaService.getSubastaOfertaWinner(request, {}, (error, response) => {
+            if(error){
+                setErrorMessage(error.message);
+            }else{
+                let oferta_precio = response.getOfertaPrecio();
+                let user = response.getUser();
+
+                if(winnerOferta < oferta_precio){
+                    setWinnerOferta(oferta_precio);
+                    setWinnerUser(user);
+                }
+            }
+
+        })
+    } 
+
+    /** Get User info */
     const getUser = () => {
         var token_decoded = jwt_decode(token);
         let user = {
@@ -159,25 +167,43 @@ export default function JoinSubasta(){
         setUser(user);
     }
 
-    const getSubastaOfertas = () => {
-        console.log("Obteniendo subastas ofertas -- from server golang")
-    
+    const getStreamSubastaOfertas = () => {
         let request = new proto.SubastaProductoId();
         request.setId(productoEnSubastaActual.id)
-        var stream = subastaService.getSubastaOfertas(request, {});
 
+        /** Ofertas de la subasta de un producto */
+        var stream = subastaService.getStreamSubastaOfertas(request, {});
         stream.on('data', function(response){
             let record = {
                 user: response.getUser(),
                 oferta: response.getOfertaPrecio()
             };   
 
-            if(record.oferta > winnerOferta){
-                setWinnerOferta(record.oferta)
-            }
-
             setRows((rows) => [...rows, record])
         })
+        stream.on("status", function (status) {
+            console.log(status.code, status.details, status.metadata);
+          });
+      
+        stream.on("end", () => {
+            console.log("Stream ended.");
+        });
+
+        
+        /* var stream_oferta_winner = subastaService.getStreamSubastaOfertaWinner(request, {});
+        stream_oferta_winner.on('data', function(response){
+            console.log("RESPUESTA GANADORA", response.getOfertaPrecio())
+            setWinnerUser(response.getUser())
+            setWinnerOferta(response.getOfertaPrecio())
+        });
+
+        stream_oferta_winner.on("status", function (status) {
+            console.log(status.code, status.details, status.metadata);
+          });
+      
+        stream_oferta_winner.on("end", () => {
+            console.log("Stream ended.");
+        }); */
 
     };
 
@@ -251,6 +277,12 @@ export default function JoinSubasta(){
         });
     }
 
+    /** Actualizar el producto en subasta una vez terminado */
+    const setUpdateProductoEnSubasta = () => {
+        let now = moment(); 
+        console.log("FINALIZO LA SUBASTA DEL PRODUCTO A LAS ", now)
+    }
+
     /** Importante obtener el producto actual en subasta o si no setear el producto que debe subastarse */
     useEffect(() => {
         getProductoEnSubasta();
@@ -291,28 +323,24 @@ export default function JoinSubasta(){
                 setProductoEnSubastaActual(subastaProducto);
                 setProductoActual(subastaProducto.producto)
             }
-
-
         })
     }
 
 
+    /** Crear una Oferta para un producto en subasta */
     const handlerCreateSubastaOferta = (e) => {
         e.preventDefault();
-        if(!(valSubastaOferta !== "" && valSubastaOferta > productoActual.precio_inicial)) {
-            setErrorMessage('El valor de oferta de ser superior o igual al precio inicial.');
+        console.log(valSubastaOferta, productoActual.precio_inicial, productoEnSubastaActual.oferta_final);
+
+        if(isNaN(valSubastaOferta)){
+            setErrorMessage('Ingresa un número valido.');
             return ;
         }
 
-        var ofertaGanadora = 0;
-        if(winnerOferta === 0) {
-            ofertaGanadora = productoActual.precio_inicial} 
-        else {
-            ofertaGanadora = winnerOferta;
-        };
-        console.log(winnerOferta, productoActual.precio_inicial, ofertaGanadora+productoActual.precio_aumento)
-        if(!(valSubastaOferta >= (ofertaGanadora+productoActual.precio_aumento))){
-            setErrorMessage('El valor de oferta de ser superior o igual al precio ganador + el precio de aumento del producto.');
+        let ofertaGanadora = winnerOferta.oferta_precio;
+        console.log("Cual es la oferta ganadora actual: ", ofertaGanadora)
+        if(valSubastaOferta < (ofertaGanadora+productoActual.precio_aumento)){
+            setErrorMessage('El valor de oferta debe ser superior a '+ (ofertaGanadora+productoActual.precio_aumento));
             return ;
         } 
 
@@ -323,6 +351,7 @@ export default function JoinSubasta(){
 
         subastaService.addSubastaOferta(subastaOfertaCreate, {}, (error, _) => {
             if(error !== null) console.log(error.code, error.message);
+            setErrorMessage("");
         });
 
         setValSubastaOferta(undefined)
@@ -373,19 +402,17 @@ export default function JoinSubasta(){
                                 </Typography> 
 
                                 {productoEnSubastaActual !== undefined && productoActual !== undefined && <Typography fontSize="small">
-                                    Subastando - {productoActual.producto} / {productoEnSubastaActual.status} <br></br>  
-                                    Unidades - {productoActual.stock} <br></br>
-                                    Inicio - {productoEnSubastaActual.inicio} <br></br>
-                                    Orden - {productoEnSubastaActual.orden}
-                                </Typography>}    
+                                    Inicio - {(productoEnSubastaActual.inicio) ? productoEnSubastaActual.inicio : subasta.fecha} / N° producto: {productoEnSubastaActual.orden} <br></br>
+                                    Subastando - {productoActual.producto} / {productoEnSubastaActual.status} / Unidades - {productoActual.stock} <br></br>  
+                                    Oferta final: {productoEnSubastaActual.oferta_final}
+                                </Typography>}
                             </Box>
 
 
                             {startCount && <Grid container>   
-                                {winnerOferta > 0 &&
-                                <Grid item xs={12} paddingY={4}>
+                                {winnerOferta !== undefined && winnerUser !== undefined && <Grid item xs={12} paddingY={4}>
                                     <Alert  variant="outlined" severity="success">
-                                        Oferta ganadora: { winnerOferta }
+                                        MEJOR OFERTA POR: {winnerUser} - $ { winnerOferta }
                                     </Alert>
                                 </Grid>}
 

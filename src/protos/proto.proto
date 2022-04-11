@@ -59,9 +59,11 @@ service SubastaService {
     rpc GetSubastaProductoEnEspera(SubastaId) returns (SubastaProducto){} // Obtener el producto en espera segun orden
     rpc GetSubasta(SubastaId) returns (Subasta) {}; // Get de una subasta en especifico
     rpc GetSubastaProductos(SubastaId) returns (SubastaProductos){} // Listado de productos en subasta
-    rpc GetSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){} // Muestra las ofertas sobre un producto en subasta
     rpc AddSubastaOferta(SubastaOfertaCreate) returns (Empty){} // Agrega una oferta
     rpc SetProductoEnSubasta(SubastaProductoId) returns (Empty){} // Habilita la subasta de un producto
+    rpc GetStreamSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){} // Muestra las ofertas sobre un producto en subasta
+    rpc GetStreamSubastaOfertaWinner(SubastaProductoId) returns (stream SubastaOferta){} // Muestre al oferta ganadora 
+    rpc GetSubastaOfertaWinner(SubastaProductoId) returns (SubastaOferta){} // Muestre al oferta ganadora 
 }
 
 /* Cliente Service */
