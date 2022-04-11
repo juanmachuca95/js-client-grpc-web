@@ -24,6 +24,18 @@ message SubastaProducto {
     string inicio = 8;
 }
 
+message SubastaProductoFinish {
+    int32 id = 1;
+    Producto producto = 2; // productos_id
+    bool activo = 3;
+    float oferta_final = 4;
+    int32 subastas_ofertas_id_winner = 5;
+    string status = 6;
+    int32 orden = 7;
+    string inicio = 8;
+    string user = 9;
+}
+
 message SubastaProductos {
     repeated SubastaProducto subastas_productos = 1;
 }
@@ -54,6 +66,8 @@ message SubastaOfertaCreate {
 message Empty {}
 
 service SubastaService {
+    rpc GetWinner(SubastaProductoId) returns (SubastaProductoFinish){} // Muestre al oferta ganadora 
+    rpc GetSubastaOfertaWinner(SubastaProductoId) returns (SubastaOferta){}
     rpc GetSubastas(Empty) returns (Subastas){}; // Listado de subastas disponibles
     rpc GetSubastaProductoEnSubasta(SubastaId) returns (SubastaProducto){} // Obtener el producto en subasta actualmente
     rpc GetSubastaProductoEnEspera(SubastaId) returns (SubastaProducto){} // Obtener el producto en espera segun orden
@@ -61,9 +75,9 @@ service SubastaService {
     rpc GetSubastaProductos(SubastaId) returns (SubastaProductos){} // Listado de productos en subasta
     rpc AddSubastaOferta(SubastaOfertaCreate) returns (Empty){} // Agrega una oferta
     rpc SetProductoEnSubasta(SubastaProductoId) returns (Empty){} // Habilita la subasta de un producto
+    rpc SetProductoSubastado(SubastaProductoId) returns (Empty){} // Cambiar el stado de la subasta (subastado) 
     rpc GetStreamSubastaOfertas(SubastaProductoId) returns (stream SubastaOferta){} // Muestra las ofertas sobre un producto en subasta
     rpc GetStreamSubastaOfertaWinner(SubastaProductoId) returns (stream SubastaOferta){} // Muestre al oferta ganadora 
-    rpc GetSubastaOfertaWinner(SubastaProductoId) returns (SubastaOferta){} // Muestre al oferta ganadora 
 }
 
 /* Cliente Service */

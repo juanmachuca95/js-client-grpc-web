@@ -44,6 +44,9 @@ export default function JoinSubasta(){
     const [minute, setMinute] = useState("00");
     const [startCount, setStartCount] = useState(false);
     const [subastaFinalizada, setSubastaFinalizada] = useState(false);
+
+    /** Set Update */
+    const [update, setUpdate] = useState(false);
     
     /** Step producto */
     const [productoStep, setProductoStep] = useState();
@@ -83,6 +86,7 @@ export default function JoinSubasta(){
                     setFecha(fecha);
                     
                     setStartCount(false);
+                    clearInterval(interval)
                     return ;
                 }
 
@@ -90,20 +94,14 @@ export default function JoinSubasta(){
                     let fecha = "El tiempo de subasta de este producto ha terminado . . . "
                     setFecha(fecha);
 
-
-                    setUpdateProductoEnSubasta();
-                    setStartCount(false);
-
                     clearInterval(interval);
+
+                    setUpdate(true);
                     return ;
                 }
 
-                
-                
-
                 var diferencia = _fecha.diff(actual, 'minute');
                 var dif_seconds = _fecha.diff(actual, 'second');
-
 
                 /** Dentro de la subasta */
                 if (diferencia <= 0 && dif_seconds <= 0){
@@ -130,19 +128,29 @@ export default function JoinSubasta(){
 
     /** Subasta Oferta Winn y Ofertas */
     useEffect(() => {
-        setInterval(()=>{
-            getSubastaOfertaWinner();
-        }, 500)
+        if(startCount && productoEnSubastaActual){
+            setInterval(() => {
+                getSubastaOfertaWinner(); 
+            }, 500)
+        }
         getStreamSubastaOfertas();
     }, [startCount, productoEnSubastaActual])
 
+    /** Update setUpdate Producto Actual */
+    useEffect(() => {
+        if(update && productoEnSubastaActual){
+            setUpdateProductoEnSubasta();
+        }
+    }, [productoEnSubastaActual, update])
+
+    /** Get subasta oferta winner por ahora */
     const getSubastaOfertaWinner = () => {
         let request = new proto.SubastaProductoId();
         request.setId(productoEnSubastaActual.id);
-
         subastaService.getSubastaOfertaWinner(request, {}, (error, response) => {
             if(error){
-                setErrorMessage(error.message);
+                //setErrorMessage(error.message);
+                console.log(error)
             }else{
                 let oferta_precio = response.getOfertaPrecio();
                 let user = response.getUser();
@@ -152,7 +160,6 @@ export default function JoinSubasta(){
                     setWinnerUser(user);
                 }
             }
-
         })
     } 
 
@@ -207,7 +214,7 @@ export default function JoinSubasta(){
 
     };
 
-    function getSubasta() {
+    const getSubasta = () => {
         var request = new proto.SubastaId();
         request.setId(id)
         var metadata = {};
@@ -279,8 +286,21 @@ export default function JoinSubasta(){
 
     /** Actualizar el producto en subasta una vez terminado */
     const setUpdateProductoEnSubasta = () => {
-        let now = moment(); 
-        console.log("FINALIZO LA SUBASTA DEL PRODUCTO A LAS ", now)
+        /** Set oferta final y winner */
+        let request = new proto.SubastaProductoId();
+        request.setId(productoEnSubastaActual.id)
+        subastaService.getWinner(request, {}, (error, response) => {
+            console.log(error, response)
+            if(error){
+                setErrorMessage(error.message)
+                return ;
+            }
+            setWinnerUser(response.getUser())
+            setWinnerOferta(response.getOfertaFinal());
+        });
+
+        console.log("FINALIZO LA SUBASTA DEL PRODUCTO A LAS ", productoEnSubastaActual)
+        setStartCount(false);
     }
 
     /** Importante obtener el producto actual en subasta o si no setear el producto que debe subastarse */
@@ -404,10 +424,16 @@ export default function JoinSubasta(){
                                 {productoEnSubastaActual !== undefined && productoActual !== undefined && <Typography fontSize="small">
                                     Inicio - {(productoEnSubastaActual.inicio) ? productoEnSubastaActual.inicio : subasta.fecha} / N° producto: {productoEnSubastaActual.orden} <br></br>
                                     Subastando - {productoActual.producto} / {productoEnSubastaActual.status} / Unidades - {productoActual.stock} <br></br>  
-                                    Oferta final: {productoEnSubastaActual.oferta_final}
                                 </Typography>}
                             </Box>
 
+                            {winnerOferta !== undefined && winnerUser !== undefined && !startCount && <Grid container>   
+                                 <Grid item xs={12} paddingY={4}>
+                                    <Alert  variant="outlined" severity="success">
+                                        Ganador de última subasta: {winnerUser} - $ { winnerOferta }
+                                    </Alert>
+                                </Grid>
+                            </Grid>}
 
                             {startCount && <Grid container>   
                                 {winnerOferta !== undefined && winnerUser !== undefined && <Grid item xs={12} paddingY={4}>
