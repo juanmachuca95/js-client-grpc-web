@@ -145,9 +145,11 @@ export default function JoinSubasta(){
 
     /** Get subasta oferta winner por ahora */
     const getSubastaOfertaWinner = () => {
+       
         let request = new proto.SubastaProductoId();
         request.setId(productoEnSubastaActual.id);
         subastaService.getSubastaOfertaWinner(request, {}, (error, response) => {
+            console.log("viene acá o no?", request)
             if(error){
                 //setErrorMessage(error.message);
                 console.log(error)
@@ -297,6 +299,9 @@ export default function JoinSubasta(){
             }
             setWinnerUser(response.getUser())
             setWinnerOferta(response.getOfertaFinal());
+
+            /** Aplicar logica para informar e enviar email reportar al cliente */
+            
         });
 
         console.log("FINALIZO LA SUBASTA DEL PRODUCTO A LAS ", productoEnSubastaActual)
