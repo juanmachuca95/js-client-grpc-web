@@ -255,16 +255,16 @@ proto.SubastaServicePromiseClient.prototype.getSubastas =
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
- *   !proto.SubastaId,
+ *   !proto.SubastaIdTime,
  *   !proto.SubastaProducto>}
  */
 const methodDescriptor_SubastaService_GetSubastaProductoEnSubasta = new grpc.web.MethodDescriptor(
   '/SubastaService/GetSubastaProductoEnSubasta',
   grpc.web.MethodType.UNARY,
-  proto.SubastaId,
+  proto.SubastaIdTime,
   proto.SubastaProducto,
   /**
-   * @param {!proto.SubastaId} request
+   * @param {!proto.SubastaIdTime} request
    * @return {!Uint8Array}
    */
   function(request) {
@@ -275,7 +275,7 @@ const methodDescriptor_SubastaService_GetSubastaProductoEnSubasta = new grpc.web
 
 
 /**
- * @param {!proto.SubastaId} request The
+ * @param {!proto.SubastaIdTime} request The
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
@@ -296,7 +296,7 @@ proto.SubastaServiceClient.prototype.getSubastaProductoEnSubasta =
 
 
 /**
- * @param {!proto.SubastaId} request The
+ * @param {!proto.SubastaIdTime} request The
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata

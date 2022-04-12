@@ -65,7 +65,16 @@ export default function JoinSubasta(){
 
         /** Set Data for User */
         getUser();
+
+        /** Get Test */
+        getTest();
     }, [])
+
+    const getTest = () => {
+        const format = "YYYY-MM-DD HH:mm:ss"
+        let now = moment()
+        console.log(now.format(format));
+    }
 
     /** Hacer generica la funcion para reutilizarla en el proximo producto */
     useEffect(() => {
@@ -78,7 +87,6 @@ export default function JoinSubasta(){
 
                 let diferencia_tiempo_maximo = actual.diff(tiempo_maximo, 'minute');
                 let diferencia_t_m_seconds = actual.diff(tiempo_maximo, 'second');
-                
                 
                 //console.log("diferencia tiempo maximo ", diferencia_tiempo_maximo, " ", diferencia_t_m_seconds);
                 if(diferencia_tiempo_maximo > 0 && diferencia_t_m_seconds > 0){ // Llego tarde.
@@ -119,6 +127,7 @@ export default function JoinSubasta(){
                 }
 
                 if(diferencia >= 0 && dif_seconds > 0){ // quedo ! no tocar
+                    console.log("Comenzará en . . . ", diferencia,  dif_seconds-(diferencia*60))
                     let fecha = "Comenzará en "+ diferencia + " minutos " + (dif_seconds-(diferencia*60)) + " segundos.";
                     setFecha(fecha)
                 }
@@ -231,6 +240,7 @@ export default function JoinSubasta(){
                     fecha: response.getFecha(),
                     activo: response.getActivo(),
                     duracion: response.getDuracion(),
+                    descanso: response.getDescanso(),
                     created_at: response.getCreatedAt(),
                     updated_at: response.getUpdatedAt()
                 }
@@ -248,6 +258,7 @@ export default function JoinSubasta(){
         var metadata = {}
 
         subastaService.getSubastaProductos(request, metadata, (err, response) => {
+            console.log(err, response)
             if(err){
                 console.log(err.code, err.message)
             }else{
@@ -301,10 +312,9 @@ export default function JoinSubasta(){
             setWinnerOferta(response.getOfertaFinal());
 
             /** Aplicar logica para informar e enviar email reportar al cliente */
-            
+            getProductoEnSubasta();
+            console.log("FINALIZO LA SUBASTA DEL PRODUCTO A LAS ", productoEnSubastaActual)
         });
-
-        console.log("FINALIZO LA SUBASTA DEL PRODUCTO A LAS ", productoEnSubastaActual)
         setStartCount(false);
     }
 
@@ -321,32 +331,23 @@ export default function JoinSubasta(){
         }
     }, [productoEnSubastaActual.orden]);
 
-    /** Obtener el producto en subasta si ya existe --- o si no crearlo */
+    /** Obtener el producto en subasta si ya existe --- de acuerdo al Id y Tiempo */
     const getProductoEnSubasta = () => {
-        let request = new proto.SubastaId()
+        let format = "YYYY-MM-DD HH:mm:ss"
+        let now = moment()
+        now = now.format(format);
+        let request = new proto.SubastaIdTime()
         request.setId(id) // id from params
+        request.setTime(now)
 
         subastaService.getSubastaProductoEnSubasta(request, {}, (error, response) => {
-            console.log("Error al obtener producto en subasta: ", error.code, error.message);
-            if(error){
-                subastaService.getSubastaProductoEnEspera(request, {}, (error, response) => {
-                    if(!error) {
-                        let subastaProductoActual = SetterSubastaProducto(response);
-                        setProductoEnSubastaActual(subastaProductoActual);                       
-                        let producto = subastaProductoActual.producto;
-                        setProductoActual(producto);
-
-                        let inicio = (subastaProductoActual.inicio === undefined) ? subasta.inicio : subastaProductoActual.inicio;
-                        setInicio(inicio); // Inicio de subasta para este producto. 
-                        
-                    }
-                })
-            }
-
             if(!error){
                 let subastaProducto = SetterSubastaProducto(response)            
                 setProductoEnSubastaActual(subastaProducto);
                 setProductoActual(subastaProducto.producto)
+
+                setInicio(subastaProducto.inicio)
+                setDuracion(subasta.duracion)
             }
         })
     }
@@ -362,7 +363,7 @@ export default function JoinSubasta(){
             return ;
         }
 
-        let ofertaGanadora = winnerOferta.oferta_precio;
+        let ofertaGanadora = winnerOferta;
         console.log("Cual es la oferta ganadora actual: ", ofertaGanadora)
         if(valSubastaOferta < (ofertaGanadora+productoActual.precio_aumento)){
             setErrorMessage('El valor de oferta debe ser superior a '+ (ofertaGanadora+productoActual.precio_aumento));
@@ -372,7 +373,7 @@ export default function JoinSubasta(){
         let subastaOfertaCreate = new proto.SubastaOfertaCreate();
         subastaOfertaCreate.setUsersId(user.users_id);
         subastaOfertaCreate.setOfertaPrecio(valSubastaOferta);
-        subastaOfertaCreate.setSubastasProductosId(1);
+        subastaOfertaCreate.setSubastaProductoId(productoEnSubastaActual.id);
 
         subastaService.addSubastaOferta(subastaOfertaCreate, {}, (error, _) => {
             if(error !== null) console.log(error.code, error.message);
@@ -384,6 +385,7 @@ export default function JoinSubasta(){
     }
 
 
+    /** Extrac subasta producto from request gRPC */
     const SetterSubastaProducto = (response) => {
         let subastaProducto = {
             id: response.array[0],
@@ -426,7 +428,7 @@ export default function JoinSubasta(){
                                     {subasta.subasta}
                                 </Typography> 
 
-                                {productoEnSubastaActual !== undefined && productoActual !== undefined && <Typography fontSize="small">
+                                {Object.entries(productoEnSubastaActual).length > 0 && Object.entries(productoActual).length > 0 && <Typography fontSize="small">
                                     Inicio - {(productoEnSubastaActual.inicio) ? productoEnSubastaActual.inicio : subasta.fecha} / N° producto: {productoEnSubastaActual.orden} <br></br>
                                     Subastando - {productoActual.producto} / {productoEnSubastaActual.status} / Unidades - {productoActual.stock} <br></br>  
                                 </Typography>}
@@ -441,7 +443,7 @@ export default function JoinSubasta(){
                             </Grid>}
 
                             {startCount && <Grid container>   
-                                {winnerOferta !== undefined && winnerUser !== undefined && <Grid item xs={12} paddingY={4}>
+                                {winnerOferta !== undefined && winnerUser !== undefined && <Grid item xs={12} paddingBottom={4}>
                                     <Alert  variant="outlined" severity="success">
                                         MEJOR OFERTA POR: {winnerUser} - $ { winnerOferta }
                                     </Alert>
@@ -494,7 +496,7 @@ export default function JoinSubasta(){
                                 </div>}
 
                             </Box>
-                            {productoStep && subastaProductos && startCount && <StepperVertical steps={subastaProductos} actual={productoStep-1} />}
+                            {productoStep && subastaProductos && <StepperVertical steps={subastaProductos} actual={productoStep-1} />}
                         </Grid>
                     </Grid>
 
