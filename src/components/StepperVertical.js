@@ -8,10 +8,19 @@ import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import CardItemProducto from './Card';
+import { createTheme } from '@material-ui/core/styles';
 
 
 export default function VerticalLinearStepper({steps, actual}) {
   const [activeStep, setActiveStep] = React.useState(actual);
+
+  const colortheme = createTheme({
+    palette: {
+      primary: { main: "#e91e63", contrastText: "#fff" },
+      secondary: { main: "#03a9f4", contrastText: "#fff" }
+    }
+  });
+  
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -37,7 +46,7 @@ export default function VerticalLinearStepper({steps, actual}) {
                 ) : null
               }
             >
-              {step.producto.producto} ({step.status})
+              {step.producto.producto} <span style={{ color: '#9e9e9e' }}>(Inicio: {step.inicio})</span> 
             </StepLabel>
             <StepContent>
                 {/* -- Card Producto - */}
