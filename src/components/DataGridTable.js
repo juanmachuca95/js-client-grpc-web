@@ -7,7 +7,7 @@ export default function DataGridSubastaOfertas({rows}){
         { field: 'oferta', headerName: '$ Oferta'},
     ];
 
-    const [sortModel, setSortModel] = React.useState([
+    const [sortModel] = React.useState([
       {
         field: 'oferta',
         sort: 'desc',

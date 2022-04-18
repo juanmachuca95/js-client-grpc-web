@@ -43,7 +43,6 @@ export default function JoinSubasta(){
     const [second, setSecond] = useState("00");
     const [minute, setMinute] = useState("00");
     const [startCount, setStartCount] = useState(false);
-    const [subastaFinalizada, setSubastaFinalizada] = useState(false);
 
     /** Set Update */
     const [update, setUpdate] = useState(false);
@@ -54,7 +53,6 @@ export default function JoinSubasta(){
     /** Controles de tiempo */
     const [inicio, setInicio] = useState();
     const [duracion, setDuracion] = useState();
-    const [fin, setFin] = useState();
 
     useEffect(() => {
         /** The Subasta */
@@ -101,7 +99,7 @@ export default function JoinSubasta(){
                     return ;
                 }
 
-                if(diferencia_tiempo_maximo == 0 && diferencia_t_m_seconds == 0){ // quedo no tocar
+                if(diferencia_tiempo_maximo === 0 && diferencia_t_m_seconds === 0){ // quedo no tocar
                     let fecha = "El tiempo de subasta de este producto ha terminado . . . "
                     setFecha(fecha);
 
@@ -443,7 +441,6 @@ export default function JoinSubasta(){
                                 <Typography fontSize="small">
                                     Fecha y hora: {subasta.fecha}
                                 </Typography>
-
 
                                 {Object.entries(productoEnSubastaActual).length > 0 && Object.entries(productoActual).length > 0 && <Typography fontSize="small">
                                     Subastando producto desde: {(productoEnSubastaActual.inicio) ? productoEnSubastaActual.inicio : subasta.fecha} / N° producto: {productoEnSubastaActual.orden} <br></br>
